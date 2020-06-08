@@ -1,0 +1,54 @@
+{
+  "name": "audio-player",
+  "version": "1.0.0",
+  "license": "MIT",
+  "main": "index.js",
+  "scripts": {
+    "start": "adalo dev",
+    "build": "adalo build",
+    "login": "adalo login",
+    "publish": "adalo publish",
+    "start:local": "ADALO_DEV_SERVER=http://localhost:3035 yarn start",
+    "login:local": "ADALO_BACKEND_SERVER=http://localhost:8084 yarn run login"
+  },
+  "peerDependencies": {},
+  "adalo": {
+    "displayName": "Audio Player",
+    "components": [
+      {
+        "name": "AudioPlayer",
+        "manifest": "./src/components/AudioPlayer/manifest.json"
+      }
+    ]
+  },
+  "devDependencies": {
+    "@adalo/cli": "/Users/scottmassey/Documents/Adalo-Repos/cli",
+    "@babel/core": "^7.1.2",
+    "@babel/plugin-proposal-class-properties": "^7.1.0",
+    "@babel/preset-env": "^7.0.0",
+    "@babel/preset-react": "^7.0.0",
+    "eslint": "^5.16.0",
+    "eslint-config-airbnb": "^17.1.1",
+    "eslint-config-prettier": "6.0.0",
+    "eslint-plugin-import": "^2.18.0",
+    "eslint-plugin-jsx-a11y": "^6.2.3",
+    "eslint-plugin-prettier": "^3.1.0",
+    "eslint-plugin-react": "^7.14.3",
+    "eslint-plugin-react-hooks": "^1.7.0",
+    "prettier": "^1.19.1",
+    "react": "^16.12.0",
+    "react-art": "^16.3.2",
+    "react-dom": "^16.12.0"
+  },
+  "dependencies": {
+    "@material-ui/core": "^4.10.0",
+    "@protonapp/react-native-material-ui": "../material-components-library",
+    "@ptomasroos/react-native-multi-slider": "^2.2.2",
+    "moment": "^2.26.0",
+    "react-native-track-player": "^1.2.3",
+    "react-native-vector-icons": "^6.6.0",
+    "react-native-web": "AdaloHQ/react-native-web",
+    "react-player": "^2.1.0",
+    "uuid": "^8.1.0"
+  }
+}
