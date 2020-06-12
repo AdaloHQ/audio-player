@@ -17,13 +17,19 @@ class AudioPlayer extends Component {
       artwork,
     } = props
     this.state = {
+      // Controls play/pause buttons, as well as playback
       playing: false,
-      seeking: false,
+      // Proportion of song played (from 0 to 1)
       progress: 0,
+      // Duration of song
       duration: 0,
+      // Time played of song (in seconds)
       played: 0,
+      // Styling options for each button
       playButton: {
         name: playPauseButtons.playIconName,
+        // Both the overarching child component must be enabled,
+        // as well as the enable for the specific button
         enabled: playPauseButtons.enablePlay && playPauseButtons.enabled,
         color: playPauseButtons.playColor,
         onPress: this.start,
@@ -58,10 +64,9 @@ class AudioPlayer extends Component {
         color: leftRightButtons.rightColor,
         onPress: leftRightButtons.rightAction,
       },
+      // Info for the specific song currently playing.
       track: {
         url,
-        position: 0,
-        duration: -1,
         title,
         subtitle,
         artwork: artwork.url,
@@ -69,17 +74,20 @@ class AudioPlayer extends Component {
     }
   }
 
+  // Changes state to playing, and calls any additional actions
   start = () => {
     const {
       playPauseButtons: { playAction },
     } = this.props
     if (playAction) {
-      playAction('test')
+      playAction()
     }
     this.setState({
       playing: true,
     })
   }
+
+  // Changes state to not playing, and calls any additional actions
   pause = () => {
     const {
       playPauseButtons: { pauseAction },
@@ -89,6 +97,8 @@ class AudioPlayer extends Component {
       playing: false,
     })
   }
+
+  // Callback for rewind button. Rewind amount is preprogrammed by the customer
   rewind = () => {
     const {
       forwardBackButtons: { backAction, backAmount },
@@ -97,13 +107,18 @@ class AudioPlayer extends Component {
     if (backAction) backAction()
     // Seek in the audio player
     const { played, duration } = this.state
+    // If rewinding would go negative or rewind is set to the beginning,
+    // seek to 0. Else seek to the rewind
     if (played - backAmount > 0 && backAmount != 0) {
       const newProgress = (played - backAmount) / duration
+      // Uses refs to tell the audio player to seek
       this.audioPlayer.seek(newProgress)
     } else {
       this.audioPlayer.seek(0)
     }
   }
+
+  // Similar logic to rewind, except for skipping forward
   skip = () => {
     const {
       forwardBackButtons: { forwardAction, forwardAmount },
@@ -115,19 +130,44 @@ class AudioPlayer extends Component {
       this.audioPlayer.seek(newProgress)
     }
   }
+
+  // Generalized seek method. Used by progressbar to seek to any place
   seek = newProgress => {
+    // Uses refs to tell audio player to seek
     this.audioPlayer.seek(newProgress)
+    // Update progress and played
     const { duration } = this.state
     const newPlayed = duration * newProgress
     this.setState({ played: newPlayed, progress: newProgress })
   }
+
   updateDuration = duration => {
     this.setState({ duration })
   }
-  updateProgress = progress => {
-    this.setState({ played: progress.playedSeconds, progress: progress.played })
+  // Originally just set the progress, but for some reason the web version
+  // would not just call its own callback and call updateProgress and
+  // updatePlayed separately, so I had to add logic here to test if newProgress
+  // is an object (which would mean ReactPlayer was calling it, not
+  // react-native-track-player), and if so it parses the object and updates state
+  // accordingly.
+  updateProgress = newProgress => {
+    if (typeof newProgress === 'object' && newProgress !== null) {
+      const { played: progress, playedSeconds: played } = newProgress
+      this.setState({ progress, played })
+    } else {
+      this.setState({ newProgress })
+    }
+  }
+  updatePlayed = played => {
+    this.setState({ played })
   }
 
+  updatePlaying = () => {
+    this.setState({ playing: true })
+  }
+
+  // Delcares ref to audio player component. Enables index to do playback
+  // control on the audio player subcomponent
   ref = audioPlayer => {
     this.audioPlayer = audioPlayer
   }
@@ -162,6 +202,8 @@ class AudioPlayer extends Component {
         textAlign: 'center',
       },
     }
+    // A little redundent, but various if statements control for positioning
+    // options chosen by customer.
     if (progressBar.position == 'aboveButtons') {
       return (
         <View style={styles.wrapper}>
@@ -183,6 +225,9 @@ class AudioPlayer extends Component {
             duration={this.state.duration}
             progress={this.state.progress}
             seek={this.seek}
+            updateProgress={this.updateProgress}
+            updateDuration={this.updateDuration}
+            updatePlayed={this.updatePlayed}
           />
           <ControlScheme {...this.state} />
           <AudioPlayerSub
@@ -193,6 +238,7 @@ class AudioPlayer extends Component {
             updateDuration={this.updateDuration}
             duration={this.state.duration}
             played={this.state.played}
+            updatePlaying={this.updatePlaying}
           />
         </View>
       )
@@ -211,6 +257,9 @@ class AudioPlayer extends Component {
             duration={this.state.duration}
             progress={this.state.progress}
             seek={this.seek}
+            updateProgress={this.updateProgress}
+            updateDuration={this.updateDuration}
+            updatePlayed={this.updatePlayed}
           />
           {title != '' ? (
             <Text style={dynamicStyles.title}>{title}</Text>
@@ -227,6 +276,7 @@ class AudioPlayer extends Component {
             updateDuration={this.updateDuration}
             duration={this.state.duration}
             played={this.state.played}
+            updatePlaying={this.updatePlaying}
           />
         </View>
       )
@@ -252,6 +302,9 @@ class AudioPlayer extends Component {
             duration={this.state.duration}
             progress={this.state.progress}
             seek={this.seek}
+            updateProgress={this.updateProgress}
+            updateDuration={this.updateDuration}
+            updatePlayed={this.updatePlayed}
           />
           <AudioPlayerSub
             ref={this.ref}
@@ -261,6 +314,7 @@ class AudioPlayer extends Component {
             updateDuration={this.updateDuration}
             duration={this.state.duration}
             played={this.state.played}
+            updatePlaying={this.updatePlaying}
           />
         </View>
       )

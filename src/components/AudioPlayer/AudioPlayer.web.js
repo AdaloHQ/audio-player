@@ -3,9 +3,12 @@ import { Text, View, Image, StyleSheet } from 'react-native'
 import ReactPlayer from 'react-player'
 
 class AudioPlayerSub extends Component {
+  // Ref to control the ReactPlayer
   ref = player => {
     this.player = player
   }
+
+  // Seek method, called by ref in index.js
   seek = newProgress => {
     if (newProgress >= 0 && newProgress <= 1) {
       this.player.seekTo(newProgress)
@@ -21,6 +24,11 @@ class AudioPlayerSub extends Component {
         playing={playing}
         onProgress={updateProgress}
         onDuration={updateDuration}
+        config={{
+          file: {
+            forceAudio: true,
+          },
+        }}
       />
     )
   }

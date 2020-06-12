@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { Component } from 'react'
 import { Text, View, Image, StyleSheet } from 'react-native'
 import TrackPlayer from 'react-native-track-player'
 import { v4 as uuid } from 'uuid'
@@ -6,11 +6,13 @@ import { v4 as uuid } from 'uuid'
 class AudioPlayerSub extends Component {
   constructor(props) {
     super(props)
-    setup()
+    // Sets up everything on react-native-track-player's end
+    this.setup()
   }
 
   setup = async () => {
     await TrackPlayer.setupPlayer()
+    // Not sure if this is required, but doesn't break anything
     await TrackPlayer.registerPlaybackService(() => require('./service.js'))
     TrackPlayer.updateOptions({
       // Whether the player should stop running when the app is closed on Android
@@ -29,36 +31,48 @@ class AudioPlayerSub extends Component {
         TrackPlayer.CAPABILITY_PAUSE,
       ],
     })
-    const { track, playing, updateProgress, updateDuration } = this.props
+    const {
+      track,
+      playing,
+      updateProgress,
+      updateDuration,
+      updatePlayed,
+    } = this.props
+    // Adds the specified song to the track player to be ready to play
     await TrackPlayer.add({
+      // Every track needs a unique id, not really used anywhere here though
       id: uuid(),
       url: track.url,
       title: track.title,
       artist: track.subtitle,
       artwork: track.artwork,
     })
-    if (this.state.playing) {
-      TrackPlayer.play()
+    // If player was already set to play, start playing
+    if (playing) {
+      await TrackPlayer.play()
     }
-    let duration = await TrackPlayer.getDuration()
-    updateDuration(duration)
-    this.progress = setInterval(async () => {
-      const position = await TrackPlayer.getPosition()
-      const progress = position / duration
-      updateProgress({ playedSeconds: position, played: progress })
-    }, 100)
+    let state = await TrackPlayer.getState()
+    if (state == 'playing' && !playing) {
+      const { updatePlaying } = this.props
+      updatePlaying()
+    }
   }
 
+  // Generic seeking function used by index to handle skip and rewind.
+  // Custom seeking is handled by ProgressBar on mobile
   seek = newProgress => {
     const { duration } = this.props
     const seekTime = newProgress * duration
     TrackPlayer.seekTo(seekTime)
   }
 
+  // When props change
   componentDidUpdate(prevProps) {
+    // Check if the play/pause controls have changed
     if (prevProps.playing != this.props.playing) {
       this.props.playing ? TrackPlayer.play() : TrackPlayer.pause()
     }
+    // Check if the track has changed
     if (prevProps.track.url != this.props.track.url) {
       TrackPlayer.add({
         id: uuid(),
@@ -68,18 +82,11 @@ class AudioPlayerSub extends Component {
         artwork: track.artwork,
       }).then(() => {
         TrackPlayer.play()
-        TrackPlayer.getDuration().then(duration => {
-          const { updateDuration } = this.props
-          updateDuration(duration)
-        })
       })
     }
   }
 
-  componentWillUnmount() {
-    clearInterval(this.progress)
-  }
-
+  // Nothing is actually rendered by this component.
   render() {
     return <View></View>
   }

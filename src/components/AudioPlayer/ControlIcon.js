@@ -5,13 +5,9 @@ import { IconToggle } from '@protonapp/react-native-material-ui'
 class ControlIcon extends Component {
   render() {
     const { name, color, enabled, onPress } = this.props
-    return (
-      <View>
-        {enabled || name ? (
-          <IconToggle name={name} color={color} onPress={onPress} />
-        ) : null}
-      </View>
-    )
+    if (enabled && name) {
+      return <IconToggle name={name} color={color} onPress={onPress} />
+    } else return <View />
   }
 }
 
