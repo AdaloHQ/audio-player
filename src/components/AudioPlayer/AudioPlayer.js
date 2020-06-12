@@ -73,17 +73,25 @@ class AudioPlayerSub extends Component {
       this.props.playing ? TrackPlayer.play() : TrackPlayer.pause()
     }
     // Check if the track has changed
-    if (prevProps.track.url != this.props.track.url) {
-      TrackPlayer.add({
-        id: uuid(),
-        url: track.url,
-        title: track.title,
-        artist: track.subtitle,
-        artwork: track.artwork,
-      }).then(() => {
-        TrackPlayer.play()
+    //let oldTrack = TrackPlayer.getTrack(TrackPlayer.getCurrentTrack())
+    let oldTrack = ''
+    TrackPlayer.getCurrentTrack().then(id => {
+      TrackPlayer.getTrack(id).then(oldTrack => {
+        if (oldTrack.url != this.props.track.url) {
+          const id = uuid()
+          const { track } = this.props
+          TrackPlayer.add({
+            id,
+            url: track.url,
+            title: track.title,
+            artist: track.subtitle,
+            artwork: track.artwork,
+          }).then(() => {
+            TrackPlayer.skip(id)
+          })
+        }
       })
-    }
+    })
   }
 
   // Nothing is actually rendered by this component.
