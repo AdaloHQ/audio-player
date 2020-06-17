@@ -69,7 +69,7 @@ class AudioPlayer extends Component {
         url,
         title,
         subtitle,
-        artwork: artwork.url,
+        artwork: artwork.artworkURL,
       },
     }
   }
