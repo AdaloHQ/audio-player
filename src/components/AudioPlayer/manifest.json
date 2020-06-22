@@ -213,14 +213,7 @@
         {
           "name": "playAction",
           "displayName": "Additional Actions when Play Button is Clicked",
-          "type": "action",
-          "arguments": [
-            {
-              "type": "number",
-              "displayName": "Argument",
-              "fieldId": "argument"
-            }
-          ]
+          "type": "action"
         },
         {
           "name": "enablePause",
