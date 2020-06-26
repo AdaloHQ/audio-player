@@ -1,7 +1,8 @@
 {
-  "name": "adalo-audio-player",
+  "name": "@adalo/audio-player",
   "version": "1.0.0",
   "license": "MIT",
+  "author": "Adalo",
   "main": "index.js",
   "scripts": {
     "start": "adalo dev",
