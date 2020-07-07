@@ -1,19 +1,24 @@
 {
   "name": "@adalo/audio-player",
-  "version": "1.0.0",
+  "version": "1.0.7",
   "license": "MIT",
   "author": "Adalo",
   "main": "index.js",
+  "description": "Play any audio file stored in Adalo or via external URL. Great for music, podcasts, etc.",
   "scripts": {
     "start": "adalo dev",
     "build": "adalo build",
     "login": "adalo login",
     "publish": "adalo publish",
+    "publish:local": "REGISTRY_URL=http://localhost:8000 yarn run publish",
     "start:local": "ADALO_DEV_SERVER=http://localhost:3035 yarn start",
-    "login:local": "ADALO_BACKEND_SERVER=http://localhost:8084 yarn run login"
+    "login:local": "ADALO_BACKEND_SERVER=http://localhost:8084 yarn run login",
+    "deploy": "adalo deploy",
+    "deploy:local": "REGISTRY_URL=http://localhost:8000 yarn run deploy"
   },
   "peerDependencies": {},
   "adalo": {
+    "logo": "./logo.png",
     "displayName": "Audio Player",
     "components": [
       {
@@ -21,11 +26,11 @@
         "manifest": "./src/components/AudioPlayer/manifest.json"
       }
     ],
-    "iosInstallScript": "scripts/install_ios.sh",
-    "androidInstallScript": "scripts/install_android.sh"
+    "iosInstallScript": "./scripts/install_ios.sh",
+    "androidInstallScript": "./scripts/install_android.sh"
   },
   "devDependencies": {
-    "@adalo/cli": "/Users/scottmassey/Documents/Adalo-Repos/cli",
+    "@adalo/cli": "^0.0.33",
     "@babel/core": "^7.1.2",
     "@babel/plugin-proposal-class-properties": "^7.1.0",
     "@babel/preset-env": "^7.0.0",
