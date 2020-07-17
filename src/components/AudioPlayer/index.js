@@ -138,7 +138,10 @@ class AudioPlayer extends Component {
     if (played + forwardAmount < duration) {
       const newProgress = (played + forwardAmount) / duration
       this.audioPlayer.seek(newProgress)
-    } else this.audioPlayer.seek(1)
+    } else {
+      this.audioPlayer.seek(1)
+      this.setState({ playing: false })
+    }
   }
 
   // Generalized seek method. Used by progressbar to seek to any place
