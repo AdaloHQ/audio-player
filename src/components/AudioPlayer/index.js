@@ -2,7 +2,6 @@ import React, { Component } from 'react'
 import { Text, View, Image, StyleSheet } from 'react-native'
 import AudioPlayerSub from './AudioPlayer'
 import ControlScheme from './ControlScheme'
-import ProgressBar from './ProgressBar'
 
 class AudioPlayer extends Component {
   constructor(props) {
@@ -81,7 +80,7 @@ class AudioPlayer extends Component {
     const {
       playPauseButtons: { playAction },
     } = this.props
-    const { playable } = this.props
+    const { playable } = this.state
     if (!playable) return
     if (playAction) {
       playAction()
@@ -97,7 +96,7 @@ class AudioPlayer extends Component {
     const {
       playPauseButtons: { pauseAction },
     } = this.props
-    const { playable } = this.props
+    const { playable } = this.state
     if (!playable) return
     if (pauseAction) pauseAction()
     this.setState({
@@ -110,7 +109,7 @@ class AudioPlayer extends Component {
     const {
       forwardBackButtons: { backAction, backAmount },
     } = this.props
-    const { playable } = this.props
+    const { playable } = this.state
     if (!playable) return
     // Call additional actions
     if (backAction) backAction()
@@ -132,7 +131,7 @@ class AudioPlayer extends Component {
     const {
       forwardBackButtons: { forwardAction, forwardAmount },
     } = this.props
-    const { playable } = this.props
+    const { playable } = this.state
     if (!playable) return
     if (forwardAction) forwardAction()
     const { duration, played } = this.state
