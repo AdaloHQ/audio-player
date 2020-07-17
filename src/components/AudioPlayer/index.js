@@ -19,6 +19,8 @@ class AudioPlayer extends Component {
     this.state = {
       // Controls play/pause buttons, as well as playback
       playing: false,
+      // Validity of url being played
+      playable: true,
       // Proportion of song played (from 0 to 1)
       progress: 0,
       // Duration of song
@@ -79,12 +81,15 @@ class AudioPlayer extends Component {
     const {
       playPauseButtons: { playAction },
     } = this.props
+    const { playable } = this.props
+    if (!playable) return
     if (playAction) {
       playAction()
     }
     this.setState({
       playing: true,
     })
+    return
   }
 
   // Changes state to not playing, and calls any additional actions
@@ -92,6 +97,8 @@ class AudioPlayer extends Component {
     const {
       playPauseButtons: { pauseAction },
     } = this.props
+    const { playable } = this.props
+    if (!playable) return
     if (pauseAction) pauseAction()
     this.setState({
       playing: false,
@@ -103,6 +110,8 @@ class AudioPlayer extends Component {
     const {
       forwardBackButtons: { backAction, backAmount },
     } = this.props
+    const { playable } = this.props
+    if (!playable) return
     // Call additional actions
     if (backAction) backAction()
     // Seek in the audio player
@@ -123,12 +132,14 @@ class AudioPlayer extends Component {
     const {
       forwardBackButtons: { forwardAction, forwardAmount },
     } = this.props
+    const { playable } = this.props
+    if (!playable) return
     if (forwardAction) forwardAction()
     const { duration, played } = this.state
     if (played + forwardAmount < duration) {
       const newProgress = (played + forwardAmount) / duration
       this.audioPlayer.seek(newProgress)
-    }
+    } else this.audioPlayer.seek(1)
   }
 
   // Generalized seek method. Used by progressbar to seek to any place
@@ -144,26 +155,18 @@ class AudioPlayer extends Component {
   updateDuration = duration => {
     this.setState({ duration })
   }
-  // Originally just set the progress, but for some reason the web version
-  // would not just call its own callback and call updateProgress and
-  // updatePlayed separately, so I had to add logic here to test if newProgress
-  // is an object (which would mean ReactPlayer was calling it, not
-  // react-native-track-player), and if so it parses the object and updates state
-  // accordingly.
   updateProgress = newProgress => {
-    if (typeof newProgress === 'object' && newProgress !== null) {
-      const { played: progress, playedSeconds: played } = newProgress
-      this.setState({ progress, played })
-    } else {
-      this.setState({ newProgress })
-    }
+    this.setState({ progress: newProgress })
   }
   updatePlayed = played => {
     this.setState({ played })
   }
 
-  updatePlaying = () => {
-    this.setState({ playing: true })
+  updatePlaying = bool => {
+    this.setState({ playing: bool })
+  }
+  updatePlayable = bool => {
+    this.setState({ playable: bool })
   }
 
   // Delcares ref to audio player component. Enables index to do playback
@@ -219,27 +222,22 @@ class AudioPlayer extends Component {
           {subtitle != '' ? (
             <Text style={dynamicStyles.subtitle}>{subtitle}</Text>
           ) : null}
-          <ProgressBar
+          <AudioPlayerSub
             {...progressBar}
             played={this.state.played}
             duration={this.state.duration}
             progress={this.state.progress}
+            playing={this.state.playing}
+            track={this.state.track}
             seek={this.seek}
+            ref={this.ref}
             updateProgress={this.updateProgress}
             updateDuration={this.updateDuration}
             updatePlayed={this.updatePlayed}
+            updatePlaying={this.updatePlaying}
+            updatePlayable={this.updatePlayable}
           />
           <ControlScheme {...this.state} />
-          <AudioPlayerSub
-            ref={this.ref}
-            track={this.state.track}
-            playing={this.state.playing}
-            updateProgress={this.updateProgress}
-            updateDuration={this.updateDuration}
-            duration={this.state.duration}
-            played={this.state.played}
-            updatePlaying={this.updatePlaying}
-          />
         </View>
       )
     } else if (progressBar.position == 'aboveTitle') {
@@ -251,15 +249,20 @@ class AudioPlayer extends Component {
               style={dynamicStyles.artwork}
             />
           ) : null}
-          <ProgressBar
+          <AudioPlayerSub
             {...progressBar}
             played={this.state.played}
             duration={this.state.duration}
             progress={this.state.progress}
+            playing={this.state.playing}
+            track={this.state.track}
             seek={this.seek}
+            ref={this.ref}
             updateProgress={this.updateProgress}
             updateDuration={this.updateDuration}
             updatePlayed={this.updatePlayed}
+            updatePlaying={this.updatePlaying}
+            updatePlayable={this.updatePlayable}
           />
           {title != '' ? (
             <Text style={dynamicStyles.title}>{title}</Text>
@@ -268,16 +271,6 @@ class AudioPlayer extends Component {
             <Text style={dynamicStyles.subtitle}>{subtitle}</Text>
           ) : null}
           <ControlScheme {...this.state} />
-          <AudioPlayerSub
-            ref={this.ref}
-            track={this.state.track}
-            playing={this.state.playing}
-            updateProgress={this.updateProgress}
-            updateDuration={this.updateDuration}
-            duration={this.state.duration}
-            played={this.state.played}
-            updatePlaying={this.updatePlaying}
-          />
         </View>
       )
     } else {
@@ -296,25 +289,20 @@ class AudioPlayer extends Component {
             <Text style={dynamicStyles.subtitle}>{subtitle}</Text>
           ) : null}
           <ControlScheme {...this.state} />
-          <ProgressBar
+          <AudioPlayerSub
             {...progressBar}
             played={this.state.played}
             duration={this.state.duration}
             progress={this.state.progress}
+            playing={this.state.playing}
+            track={this.state.track}
             seek={this.seek}
+            ref={this.ref}
             updateProgress={this.updateProgress}
             updateDuration={this.updateDuration}
             updatePlayed={this.updatePlayed}
-          />
-          <AudioPlayerSub
-            ref={this.ref}
-            track={this.state.track}
-            playing={this.state.playing}
-            updateProgress={this.updateProgress}
-            updateDuration={this.updateDuration}
-            duration={this.state.duration}
-            played={this.state.played}
             updatePlaying={this.updatePlaying}
+            updatePlayable={this.updatePlayable}
           />
         </View>
       )

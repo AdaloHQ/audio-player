@@ -1,5 +1,5 @@
-import React, { Component } from 'react'
-import { Text, View, Image, StyleSheet } from 'react-native'
+import React from 'react'
+import { Text, View, StyleSheet } from 'react-native'
 import TrackPlayer from 'react-native-track-player'
 import MultiSlider from '@ptomasroos/react-native-multi-slider'
 
@@ -29,8 +29,11 @@ class ProgressBar extends TrackPlayer.ProgressComponent {
       // where it was before the user seeked for a brief moment in time.
       recentlySeeked: true,
     })
+    const { updateProgress, updatePlayed } = this.props
     const { duration, seekingValue } = this.state
     let seekValueSec = seekingValue * duration
+    updatePlayed(seekValueSec)
+    updateProgress(seekingValue)
     TrackPlayer.seekTo(seekValueSec)
   }
 
@@ -38,7 +41,7 @@ class ProgressBar extends TrackPlayer.ProgressComponent {
   // the progress bar, not the AudioPlayerSub, so if there are differences
   // between the new props and the old props, don't rerender.
   // Prevents an infinite loop.
-  shouldComponentUpdate(nextProps, nextState) {
+  shouldComponentUpdate(nextProps) {
     //played, duration, progress
     const { played, duration, progress } = this.props
     if (
@@ -78,9 +81,9 @@ class ProgressBar extends TrackPlayer.ProgressComponent {
       played: propPlayed,
     } = this.props
     // If track has changed, update the duration
-    if (this.props.duration != duration) updateDuration(duration)
+    if (propDuration != duration) updateDuration(duration)
     // Update the progress in index if it's changed
-    if (this.props.played != played) {
+    if (propPlayed != played) {
       updateProgress(progress)
       updatePlayed(played)
     }

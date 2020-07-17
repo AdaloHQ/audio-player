@@ -1,7 +1,8 @@
 import React, { Component } from 'react'
-import { Text, View, Image, StyleSheet } from 'react-native'
+import { View } from 'react-native'
 import TrackPlayer from 'react-native-track-player'
 import { v4 as uuid } from 'uuid'
+import ProgressBar from './ProgressBar'
 
 class AudioPlayerSub extends Component {
   constructor(props) {
@@ -31,13 +32,7 @@ class AudioPlayerSub extends Component {
         TrackPlayer.CAPABILITY_PAUSE,
       ],
     })
-    const {
-      track,
-      playing,
-      updateProgress,
-      updateDuration,
-      updatePlayed,
-    } = this.props
+    const { track, playing } = this.props
     // Adds the specified song to the track player to be ready to play
     await TrackPlayer.add({
       // Every track needs a unique id, not really used anywhere here though
@@ -54,7 +49,7 @@ class AudioPlayerSub extends Component {
     let state = await TrackPlayer.getState()
     if (state == 'playing' && !playing) {
       const { updatePlaying } = this.props
-      updatePlaying()
+      updatePlaying(true)
     }
   }
 
@@ -94,9 +89,9 @@ class AudioPlayerSub extends Component {
     })
   }
 
-  // Nothing is actually rendered by this component.
+  // Render Progress Bar
   render() {
-    return <View></View>
+    return <ProgressBar {...this.props} />
   }
 }
 

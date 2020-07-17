@@ -61,3 +61,6 @@ typings/
 .DS_Store
 dump.rdb
 .idea
+
+# Dist
+dist
