@@ -1,5 +1,4 @@
 import React, { Component } from 'react'
-import { View } from 'react-native'
 import TrackPlayer from 'react-native-track-player'
 import { v4 as uuid } from 'uuid'
 import ProgressBar from './ProgressBar'
@@ -13,8 +12,6 @@ class AudioPlayerSub extends Component {
 
   setup = async () => {
     await TrackPlayer.setupPlayer()
-    // Not sure if this is required, but doesn't break anything
-    await TrackPlayer.registerPlaybackService(() => require('./service.js'))
     TrackPlayer.updateOptions({
       // Whether the player should stop running when the app is closed on Android
       stopWithApp: true,
@@ -72,6 +69,7 @@ class AudioPlayerSub extends Component {
     let oldTrack = ''
     TrackPlayer.getCurrentTrack().then(id => {
       TrackPlayer.getTrack(id).then(oldTrack => {
+        console.log('oldTrack: ', oldTrack)
         if (oldTrack.url != this.props.track.url) {
           const id = uuid()
           const { track } = this.props
