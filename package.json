@@ -1,6 +1,6 @@
 {
   "name": "@adalo/audio-player",
-  "version": "1.1.5",
+  "version": "1.1.10",
   "license": "MIT",
   "author": "Adalo",
   "main": "index.js",
@@ -46,7 +46,8 @@
     "prettier": "^1.19.1",
     "react": "^16.12.0",
     "react-art": "^16.3.2",
-    "react-dom": "^16.12.0"
+    "react-dom": "^16.12.0",
+    "react-native-web": "AdaloHQ/react-native-web"
   },
   "dependencies": {
     "@material-ui/core": "^4.10.0",
@@ -56,7 +57,6 @@
     "react-native-swift": "^1.2.3",
     "react-native-track-player": "^1.2.3",
     "react-native-vector-icons": "^6.6.0",
-    "react-native-web": "AdaloHQ/react-native-web",
-    "uuid": "^8.1.0"
+    "uuid": "^3.0.0"
   }
 }

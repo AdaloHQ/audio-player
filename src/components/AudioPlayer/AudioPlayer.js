@@ -65,12 +65,9 @@ class AudioPlayerSub extends Component {
       this.props.playing ? TrackPlayer.play() : TrackPlayer.pause()
     }
     // Check if the track has changed
-    //let oldTrack = TrackPlayer.getTrack(TrackPlayer.getCurrentTrack())
-    let oldTrack = ''
     TrackPlayer.getCurrentTrack().then(id => {
       TrackPlayer.getTrack(id).then(oldTrack => {
-        console.log('oldTrack: ', oldTrack)
-        if (oldTrack.url != this.props.track.url) {
+        if (oldTrack?.url != this.props.track.url) {
           const id = uuid()
           const { track } = this.props
           TrackPlayer.add({
