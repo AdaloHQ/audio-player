@@ -6,8 +6,23 @@ class ControlIcon extends Component {
   render() {
     const { name, color, enabled, onPress, playable } = this.props
     if (enabled && name) {
-      return <IconToggle name={name} color={color} onPress={onPress} />
-    } else return <View />
+      return (
+        <IconToggle
+          key={`${name}${color}`}
+          name={name}
+          color={color}
+          onPress={onPress}
+          size={28}
+        />
+      )
+    } else
+      return (
+        <IconToggle
+          name={name ? name : 'pause'}
+          color={'#FFFFFF00'}
+          size={28}
+        />
+      )
   }
 }
 

@@ -56,11 +56,15 @@ export default class AudioPlayerSub extends Component {
   }
 
   addUrl = url => {
-    const { updatePlayable } = this.props
+    const { updatePlayable, updatePlaying, autoplay, editor } = this.props
     updatePlayable(false)
     let testSound = new Audio(url)
     testSound.addEventListener('canplay', () => {
       this.player.src = url
+      if (autoplay && !editor) {
+        updatePlaying(true)
+        this.player.play()
+      }
       testSound.removeEventListener('canplay', () => {})
       updatePlayable(true)
     })
@@ -108,6 +112,8 @@ export default class AudioPlayerSub extends Component {
       borderSize,
       borderShadow,
       endTimeFormat,
+      markerColor,
+      width,
     } = this.props
     // Formats duration and played using "hhmmss", padding the numbers and
     // presenting it as a string.
@@ -129,6 +135,8 @@ export default class AudioPlayerSub extends Component {
       },
       //Makes sure the marker is properly centered on the slider
       marginTop: height - 2,
+      borderWidth: 0,
+      backgroundColor: markerColor,
     }
     if (border) {
       markerStyle.borderWidth = borderSize
@@ -142,31 +150,35 @@ export default class AudioPlayerSub extends Component {
     return (
       <View style={styles.wrapper}>
         <audio ref={ref => (this.player = ref)} />
-        <Text style={styles.text}>{playedFormatted}</Text>
-        <MultiSlider
-          enabledOne
-          min={0}
-          max={1}
-          values={[sliderValue]}
-          step={0.01}
-          sliderLength={100}
-          enableLabel={false}
-          onValuesChangeStart={this.startSeek}
-          onValuesChange={this.seekChange}
-          onValuesChangeFinish={this.endSeek}
-          trackStyle={{
-            backgroundColor: unfilledColor,
-            height: height,
-            borderRadius: progressRounding,
-          }}
-          selectedStyle={{
-            backgroundColor: filledColor,
-            height: height,
-            borderRadius: progressRounding,
-          }}
-          markerStyle={markerStyle}
-        />
-        <Text style={styles.text}>{durationFormatted}</Text>
+        <View style={styles.seekBar}>
+          <MultiSlider
+            enabledOne
+            min={0}
+            max={1}
+            values={[sliderValue]}
+            step={0.01}
+            sliderLength={width - 10}
+            enableLabel={false}
+            onValuesChangeStart={this.startSeek}
+            onValuesChange={this.seekChange}
+            onValuesChangeFinish={this.endSeek}
+            trackStyle={{
+              backgroundColor: unfilledColor,
+              height: height,
+              borderRadius: progressRounding,
+            }}
+            selectedStyle={{
+              backgroundColor: filledColor,
+              height: height,
+              borderRadius: progressRounding,
+            }}
+            markerStyle={markerStyle}
+          />
+        </View>
+        <View style={styles.timeText}>
+          <Text>{playedFormatted}</Text>
+          <Text>{durationFormatted}</Text>
+        </View>
       </View>
     )
   }
@@ -188,9 +200,14 @@ function hhmmss(secs) {
 
 const styles = StyleSheet.create({
   wrapper: {
-    flexDirection: 'row',
+    flexDirection: 'column',
   },
-  text: {
-    padding: 3,
+  seekBar: {
+    height: 35,
+  },
+  timeText: {
+    margin: 0,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   },
 })

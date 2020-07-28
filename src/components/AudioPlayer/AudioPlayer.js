@@ -29,7 +29,7 @@ class AudioPlayerSub extends Component {
         TrackPlayer.CAPABILITY_PAUSE,
       ],
     })
-    const { track, playing } = this.props
+    const { track, playing, autoplay } = this.props
     // Adds the specified song to the track player to be ready to play
     await TrackPlayer.add({
       // Every track needs a unique id, not really used anywhere here though
@@ -40,7 +40,7 @@ class AudioPlayerSub extends Component {
       artwork: track.artwork,
     })
     // If player was already set to play, start playing
-    if (playing) {
+    if (playing || autoplay) {
       await TrackPlayer.play()
     }
     let state = await TrackPlayer.getState()
@@ -58,18 +58,38 @@ class AudioPlayerSub extends Component {
     TrackPlayer.seekTo(seekTime)
   }
 
-  // When props change
-  componentDidUpdate(prevProps) {
-    // Check if the play/pause controls have changed
-    if (prevProps.playing != this.props.playing) {
-      this.props.playing ? TrackPlayer.play() : TrackPlayer.pause()
-    }
+  checkTrack = async () => {
     // Check if the track has changed
-    TrackPlayer.getCurrentTrack().then(id => {
+    const id = await TrackPlayer.getCurrentTrack()
+    const oldTrack = await TrackPlayer.getTrack(id)
+    if (oldTrack?.url != this.props.track.url) {
+      const id = uuid()
+      const { track, playing, autoplay, updatePlaying } = this.props
+      await TrackPlayer.add({
+        id,
+        url: track.url,
+        title: track.title,
+        artist: track.subtitle,
+        artwork: track.artwork,
+      })
+      TrackPlayer.skip(id)
+      // If player was already set to play, start playing
+      if (playing || autoplay) {
+        await TrackPlayer.play()
+        updatePlaying(true)
+      }
+      let state = await TrackPlayer.getState()
+      if (state == 'playing' && !playing) {
+        const { updatePlaying } = this.props
+        updatePlaying(true)
+      }
+    }
+
+    /*TrackPlayer.getCurrentTrack().then(id => {
       TrackPlayer.getTrack(id).then(oldTrack => {
         if (oldTrack?.url != this.props.track.url) {
           const id = uuid()
-          const { track } = this.props
+          const { track, playing, autoplay } = this.props
           TrackPlayer.add({
             id,
             url: track.url,
@@ -77,11 +97,29 @@ class AudioPlayerSub extends Component {
             artist: track.subtitle,
             artwork: track.artwork,
           }).then(() => {
-            TrackPlayer.skip(id)
+            TrackPlayer.skip(id);
+            // If player was already set to play, start playing
+            if (playing || autoplay) {
+              await TrackPlayer.play()
+            }
+            let state = await TrackPlayer.getState()
+            if (state == 'playing' && !playing) {
+              const { updatePlaying } = this.props
+              updatePlaying(true)
+            }
           })
         }
       })
-    })
+    })*/
+  }
+
+  // When props change
+  componentDidUpdate(prevProps) {
+    // Check if the play/pause controls have changed
+    if (prevProps.playing != this.props.playing) {
+      this.props.playing ? TrackPlayer.play() : TrackPlayer.pause()
+    }
+    this.checkTrack()
   }
 
   // Render Progress Bar

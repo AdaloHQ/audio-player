@@ -6,15 +6,7 @@ import ControlScheme from './ControlScheme'
 class AudioPlayer extends Component {
   constructor(props) {
     super(props)
-    const {
-      playPauseButtons,
-      forwardBackButtons,
-      leftRightButtons,
-      url,
-      title,
-      subtitle,
-      artwork,
-    } = props
+    const { url, title, subtitle, artwork } = props
     this.state = {
       // Controls play/pause buttons, as well as playback
       playing: false,
@@ -26,45 +18,6 @@ class AudioPlayer extends Component {
       duration: 0,
       // Time played of song (in seconds)
       played: 0,
-      // Styling options for each button
-      playButton: {
-        name: playPauseButtons.playIconName,
-        // Both the overarching child component must be enabled,
-        // as well as the enable for the specific button
-        enabled: playPauseButtons.enablePlay && playPauseButtons.enabled,
-        color: playPauseButtons.playColor,
-        onPress: this.start,
-      },
-      pauseButton: {
-        name: playPauseButtons.pauseIconName,
-        enabled: playPauseButtons.enablePause && playPauseButtons.enabled,
-        color: playPauseButtons.pauseColor,
-        onPress: this.pause,
-      },
-      forwardButton: {
-        name: forwardBackButtons.forwardIconName,
-        enabled: forwardBackButtons.enableForward && forwardBackButtons.enabled,
-        color: forwardBackButtons.forwardColor,
-        onPress: this.skip,
-      },
-      backButton: {
-        name: forwardBackButtons.backIconName,
-        enabled: forwardBackButtons.enableBack && forwardBackButtons.enabled,
-        color: forwardBackButtons.backColor,
-        onPress: this.rewind,
-      },
-      leftButton: {
-        name: leftRightButtons.leftIconName,
-        enabled: leftRightButtons.enableLeft && leftRightButtons.enabled,
-        color: leftRightButtons.leftColor,
-        onPress: leftRightButtons.leftAction,
-      },
-      rightButton: {
-        name: leftRightButtons.rightIconName,
-        enabled: leftRightButtons.enableRight && leftRightButtons.enabled,
-        color: leftRightButtons.rightColor,
-        onPress: leftRightButtons.rightAction,
-      },
       // Info for the specific song currently playing.
       track: {
         url,
@@ -187,6 +140,12 @@ class AudioPlayer extends Component {
       subtitleColor,
       subtitleSize,
       progressBar,
+      _width,
+      playPauseButtons,
+      forwardBackButtons,
+      leftRightButtons,
+      autoplay,
+      editor,
     } = this.props
     const dynamicStyles = {
       artwork: {
@@ -199,12 +158,53 @@ class AudioPlayer extends Component {
         fontSize: titleSize,
         padding: 4,
         textAlign: 'center',
+        fontWeight: 'bold',
       },
       subtitle: {
         color: subtitleColor,
         fontSize: subtitleSize,
         padding: 4,
         textAlign: 'center',
+      },
+    }
+    const buttonConfig = {
+      playButton: {
+        name: playPauseButtons.playIconName,
+        // Both the overarching child component must be enabled,
+        // as well as the enable for the specific button
+        enabled: playPauseButtons.enabled,
+        color: playPauseButtons.playColor,
+        onPress: this.start,
+      },
+      pauseButton: {
+        name: playPauseButtons.pauseIconName,
+        enabled: playPauseButtons.enabled,
+        color: playPauseButtons.pauseColor,
+        onPress: this.pause,
+      },
+      forwardButton: {
+        name: forwardBackButtons.forwardIconName,
+        enabled: forwardBackButtons.enableForward && forwardBackButtons.enabled,
+        color: forwardBackButtons.forwardColor,
+        onPress: this.skip,
+      },
+      backButton: {
+        name: forwardBackButtons.backIconName,
+        enabled: forwardBackButtons.enableBack && forwardBackButtons.enabled,
+        color: forwardBackButtons.backColor,
+        onPress: this.rewind,
+      },
+      leftButton: {
+        name: leftRightButtons.leftIconName,
+        enabled: leftRightButtons.enableLeft && leftRightButtons.enabled,
+        color: leftRightButtons.leftColor,
+        onPress: leftRightButtons.leftAction,
+      },
+      rightButton: {
+        name: leftRightButtons.rightIconName,
+        enabled: leftRightButtons.enableRight && leftRightButtons.enabled,
+        color: leftRightButtons.rightColor,
+        onPress: leftRightButtons.rightAction,
       },
     }
     // A little redundent, but various if statements control for positioning
@@ -238,8 +238,11 @@ class AudioPlayer extends Component {
             updatePlayed={this.updatePlayed}
             updatePlaying={this.updatePlaying}
             updatePlayable={this.updatePlayable}
+            width={_width}
+            autoplay
+            editor={editor}
           />
-          <ControlScheme {...this.state} />
+          <ControlScheme {...buttonConfig} {...this.state} />
         </View>
       )
     } else if (progressBar.position == 'aboveTitle') {
@@ -265,6 +268,9 @@ class AudioPlayer extends Component {
             updatePlayed={this.updatePlayed}
             updatePlaying={this.updatePlaying}
             updatePlayable={this.updatePlayable}
+            width={_width}
+            autoplay
+            editor={editor}
           />
           {title != '' ? (
             <Text style={dynamicStyles.title}>{title}</Text>
@@ -272,7 +278,7 @@ class AudioPlayer extends Component {
           {subtitle != '' ? (
             <Text style={dynamicStyles.subtitle}>{subtitle}</Text>
           ) : null}
-          <ControlScheme {...this.state} />
+          <ControlScheme {...buttonConfig} {...this.state} />
         </View>
       )
     } else {
@@ -290,7 +296,7 @@ class AudioPlayer extends Component {
           {subtitle != '' ? (
             <Text style={dynamicStyles.subtitle}>{subtitle}</Text>
           ) : null}
-          <ControlScheme {...this.state} />
+          <ControlScheme {...buttonConfig} {...this.state} />
           <AudioPlayerSub
             {...progressBar}
             played={this.state.played}
@@ -305,6 +311,9 @@ class AudioPlayer extends Component {
             updatePlayed={this.updatePlayed}
             updatePlaying={this.updatePlaying}
             updatePlayable={this.updatePlayable}
+            width={_width}
+            autoplay
+            editor={editor}
           />
         </View>
       )

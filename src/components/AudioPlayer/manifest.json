@@ -1,7 +1,7 @@
 {
   "displayName": "Audio Player",
-  "defaultWidth": 200,
-  "defaultHeight": 300,
+  "defaultWidth": 250,
+  "defaultHeight": 400,
   "resizeY": true,
   "icon": "./icon.png",
   "components": "./index.js",
@@ -10,6 +10,12 @@
       "name": "url",
       "displayName": "URL of Song",
       "type": "text"
+    },
+    {
+      "name": "autoplay",
+      "displayName": "Autoplay?",
+      "type": "boolean",
+      "default": false
     },
     {
       "name": "title",
@@ -73,20 +79,24 @@
           "name": "height",
           "displayName": "Height",
           "type": "number",
-          "default": 100
+          "default": 250
         },
         {
           "name": "width",
           "displayName": "Width",
           "type": "number",
-          "default": 100
+          "default": 250
         },
         {
           "name": "artworkRounding",
           "displayName": "Rounding",
           "type": "number",
-          "default": 4,
-          "control": { "type": "slider", "max": 18, "min": 0 }
+          "default": 6,
+          "control": {
+            "type": "slider",
+            "max": 18,
+            "min": 0
+          }
         }
       ]
     },
@@ -102,9 +112,18 @@
           "control": {
             "type": "menu",
             "options": [
-              { "label": "Above Title", "value": "aboveTitle" },
-              { "label": "Above Buttons", "value": "aboveButtons" },
-              { "label": "Below Buttons", "value": "belowButtons" }
+              {
+                "label": "Above Title",
+                "value": "aboveTitle"
+              },
+              {
+                "label": "Above Buttons",
+                "value": "aboveButtons"
+              },
+              {
+                "label": "Below Buttons",
+                "value": "belowButtons"
+              }
             ]
           }
         },
@@ -125,7 +144,11 @@
           "displayName": "Rounding",
           "type": "number",
           "default": 4,
-          "control": { "type": "slider", "max": 18, "min": 0 }
+          "control": {
+            "type": "slider",
+            "max": 18,
+            "min": 0
+          }
         },
         {
           "name": "height",
@@ -155,19 +178,25 @@
           "name": "borderColor",
           "displayName": "Border Color",
           "type": "color",
-          "default": "@primary"
+          "default": "@primary",
+          "enabled": {
+            "border": true
+          }
         },
         {
           "name": "borderSize",
           "displayName": "Border Size",
           "type": "number",
-          "default": 1
+          "default": 1,
+          "enabled": {
+            "border": true
+          }
         },
         {
           "name": "borderShadow",
           "displayName": "Shadow",
           "type": "boolean",
-          "default": true
+          "default": false
         },
         {
           "name": "endTimeFormat",
@@ -177,8 +206,14 @@
           "control": {
             "type": "menu",
             "options": [
-              { "label": "Time Remaining", "value": 0 },
-              { "label": "Total Time", "value": 1 }
+              {
+                "label": "Time Remaining",
+                "value": 0
+              },
+              {
+                "label": "Total Time",
+                "value": 1
+              }
             ]
           }
         }
@@ -194,12 +229,6 @@
           "default": true
         },
         {
-          "name": "enablePlay",
-          "displayName": "Enable Play Button",
-          "type": "boolean",
-          "default": true
-        },
-        {
           "name": "playIconName",
           "displayName": "Play Button Icon",
           "type": "icon",
@@ -209,18 +238,12 @@
           "name": "playColor",
           "displayName": "Icon Color",
           "type": "color",
-          "default": "#757575"
+          "default": "@primary"
         },
         {
           "name": "playAction",
           "displayName": "Additional Actions when Play Button is Clicked",
           "type": "action"
-        },
-        {
-          "name": "enablePause",
-          "displayName": "Enable Pause Button",
-          "type": "boolean",
-          "default": true
         },
         {
           "name": "pauseIconName",
@@ -232,7 +255,7 @@
           "name": "pauseColor",
           "displayName": "Icon Color",
           "type": "color",
-          "default": "#757575"
+          "default": "@primary"
         },
         {
           "name": "pauseAction",
@@ -264,28 +287,49 @@
           "control": {
             "type": "menu",
             "options": [
-              { "label": "5 Seconds", "value": 5 },
-              { "label": "10 Seconds", "value": 10 },
-              { "label": "30 Seconds", "value": 30 }
+              {
+                "label": "5 Seconds",
+                "value": 5
+              },
+              {
+                "label": "10 Seconds",
+                "value": 10
+              },
+              {
+                "label": "30 Seconds",
+                "value": 30
+              }
             ]
+          },
+          "enabled": {
+            "enableForward": true
           }
         },
         {
           "name": "forwardIconName",
           "displayName": "Forward Button Icon",
           "type": "icon",
-          "default": "forward-30"
+          "default": "forward-30",
+          "enabled": {
+            "enableForward": true
+          }
         },
         {
           "name": "forwardColor",
           "displayName": "Icon Color",
           "type": "color",
-          "default": "#757575"
+          "default": "#757575",
+          "enabled": {
+            "enableForward": true
+          }
         },
         {
           "name": "forwardAction",
           "displayName": "Additional Actions when Forward Button is Clicked",
-          "type": "action"
+          "type": "action",
+          "enabled": {
+            "enableForward": true
+          }
         },
         {
           "name": "enableBack",
@@ -301,29 +345,53 @@
           "control": {
             "type": "menu",
             "options": [
-              { "label": "5 Seconds", "value": 5 },
-              { "label": "10 Seconds", "value": 10 },
-              { "label": "30 Seconds", "value": 30 },
-              { "label": "To beginning of track", "value": 0 }
+              {
+                "label": "5 Seconds",
+                "value": 5
+              },
+              {
+                "label": "10 Seconds",
+                "value": 10
+              },
+              {
+                "label": "30 Seconds",
+                "value": 30
+              },
+              {
+                "label": "To beginning of track",
+                "value": 0
+              }
             ]
+          },
+          "enabled": {
+            "enableBack": true
           }
         },
         {
           "name": "backIconName",
           "displayName": "Back Button Icon",
           "type": "icon",
-          "default": "replay-10"
+          "default": "replay-10",
+          "enabled": {
+            "enableBack": true
+          }
         },
         {
           "name": "backColor",
           "displayName": "Icon Color",
           "type": "color",
-          "default": "#757575"
+          "default": "#757575",
+          "enabled": {
+            "enableBack": true
+          }
         },
         {
           "name": "backAction",
           "displayName": "Additional Actions when Back Button is Clicked",
-          "type": "action"
+          "type": "action",
+          "enabled": {
+            "enableBack": true
+          }
         }
       ]
     },
@@ -345,18 +413,28 @@
         {
           "name": "leftIconName",
           "displayName": "Left Button Icon",
-          "type": "icon"
+          "type": "icon",
+          "default": "thumb-up",
+          "enabled": {
+            "enableLeft": true
+          }
         },
         {
           "name": "leftColor",
           "displayName": "Icon Color",
           "type": "color",
-          "default": "#757575"
+          "default": "#757575",
+          "enabled": {
+            "enableLeft": true
+          }
         },
         {
           "name": "leftAction",
           "displayName": "Additional Actions when Left Button is Clicked",
-          "type": "action"
+          "type": "action",
+          "enabled": {
+            "enableLeft": true
+          }
         },
         {
           "name": "enableRight",
@@ -367,18 +445,28 @@
         {
           "name": "rightIconName",
           "displayName": "Right Button Icon",
-          "type": "icon"
+          "type": "icon",
+          "default": "thumb-down",
+          "enabled": {
+            "enableRight": true
+          }
         },
         {
           "name": "rightColor",
           "displayName": "Icon Color",
           "type": "color",
-          "default": "#757575"
+          "default": "#757575",
+          "enabled": {
+            "enableRight": true
+          }
         },
         {
           "name": "rightAction",
           "displayName": "Additional Actions when Right Button is Clicked",
-          "type": "action"
+          "type": "action",
+          "enabled": {
+            "enableRight": true
+          }
         }
       ]
     }

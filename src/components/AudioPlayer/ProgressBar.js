@@ -65,6 +65,8 @@ class ProgressBar extends TrackPlayer.ProgressComponent {
       borderSize,
       borderShadow,
       endTimeFormat,
+      markerColor,
+      width,
     } = this.props
     let {
       position: played,
@@ -130,6 +132,8 @@ class ProgressBar extends TrackPlayer.ProgressComponent {
       },
       //Makes sure the marker is properly centered on the slider
       marginTop: height - 2,
+      borderWidth: 0,
+      backgroundColor: markerColor,
     }
     if (border) {
       markerStyle.borderWidth = borderSize
@@ -142,31 +146,35 @@ class ProgressBar extends TrackPlayer.ProgressComponent {
     }
     return (
       <View style={styles.wrapper}>
-        <Text style={styles.text}>{playedFormatted}</Text>
-        <MultiSlider
-          enabledOne
-          min={0}
-          max={1}
-          values={[sliderValue]}
-          step={0.01}
-          sliderLength={100}
-          enableLabel={false}
-          onValuesChangeStart={this.startSeek}
-          onValuesChange={this.seek}
-          onValuesChangeFinish={this.endSeek}
-          trackStyle={{
-            backgroundColor: unfilledColor,
-            height: height,
-            borderRadius: progressRounding,
-          }}
-          selectedStyle={{
-            backgroundColor: filledColor,
-            height: height,
-            borderRadius: progressRounding,
-          }}
-          markerStyle={markerStyle}
-        />
-        <Text style={styles.text}>{durationFormatted}</Text>
+        <View style={styles.seekBar}>
+          <MultiSlider
+            enabledOne
+            min={0}
+            max={1}
+            values={[sliderValue]}
+            step={0.01}
+            sliderLength={width - 10}
+            enableLabel={false}
+            onValuesChangeStart={this.startSeek}
+            onValuesChange={this.seek}
+            onValuesChangeFinish={this.endSeek}
+            trackStyle={{
+              backgroundColor: unfilledColor,
+              height: height,
+              borderRadius: progressRounding,
+            }}
+            selectedStyle={{
+              backgroundColor: filledColor,
+              height: height,
+              borderRadius: progressRounding,
+            }}
+            markerStyle={markerStyle}
+          />
+        </View>
+        <View style={styles.timeText}>
+          <Text>{playedFormatted}</Text>
+          <Text>{durationFormatted}</Text>
+        </View>
       </View>
     )
   }
@@ -188,10 +196,15 @@ function hhmmss(secs) {
 
 const styles = StyleSheet.create({
   wrapper: {
-    flexDirection: 'row',
+    flexDirection: 'column',
   },
-  text: {
-    padding: 3,
+  seekBar: {
+    height: 35,
+  },
+  timeText: {
+    margin: 0,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   },
 })
 
