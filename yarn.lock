@@ -2,10 +2,10 @@
 # yarn lockfile v1
 
 
-"@adalo/cli@^0.0.37":
-  version "0.0.37"
-  resolved "https://registry.yarnpkg.com/@adalo/cli/-/cli-0.0.37.tgz#9182ed55babe65327067c232f2dee04ff6d06cae"
-  integrity sha512-1njpECTMygodOCI9IK7t6vwWSVghAHtF0pzz25BV1Wv90ZvRAHOh79qm2h+LBpcKJMHq/ngHOLoGfXtzUVwhQw==
+"@adalo/cli@^0.0.38":
+  version "0.0.38"
+  resolved "https://registry.yarnpkg.com/@adalo/cli/-/cli-0.0.38.tgz#6759a50cf0f04fc1647c056a7f71c034efb46b67"
+  integrity sha512-EfXF41K4Qq8SA1FRcoV/mSEJDV6Dh4aEsz1Ey7tL9w53AJDIDf1SjWj/5MYy8p6lFW0PDHioyGIQPjSGNLYIwQ==
   dependencies:
     "@babel/core" "^7.1.2"
     "@babel/plugin-proposal-class-properties" "^7.1.0"
