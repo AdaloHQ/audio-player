@@ -207,6 +207,8 @@ class AudioPlayer extends Component {
         onPress: leftRightButtons.rightAction,
       },
     }
+    const placeholderAlbumArt =
+      'https://d1csarkz8obe9u.cloudfront.net/posterpreviews/cool-album-cover-design-template-3676481d61549c8e2d8fcc1b26c1f9d1.jpg?ts=1567083644'
     // A little redundent, but various if statements control for positioning
     // options chosen by customer.
     if (progressBar.position == 'aboveButtons') {
@@ -216,6 +218,7 @@ class AudioPlayer extends Component {
             <Image
               source={{ uri: artwork.artworkURL }}
               style={dynamicStyles.artwork}
+              defaultSource={placeholderAlbumArt}
             />
           ) : null}
           {title != '' ? (
@@ -252,6 +255,7 @@ class AudioPlayer extends Component {
             <Image
               source={{ uri: artwork.artworkURL }}
               style={dynamicStyles.artwork}
+              defaultSource={placeholderAlbumArt}
             />
           ) : null}
           <AudioPlayerSub
@@ -288,6 +292,7 @@ class AudioPlayer extends Component {
             <Image
               source={{ uri: artwork.artworkURL }}
               style={dynamicStyles.artwork}
+              defaultSource={placeholderAlbumArt}
             />
           ) : null}
           {title != '' ? (
