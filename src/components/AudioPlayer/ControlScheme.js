@@ -33,6 +33,7 @@ const styles = StyleSheet.create({
   icons: {
     flexDirection: 'row',
     justifyContent: 'center',
+    alignItems: 'center',
   },
 })
 

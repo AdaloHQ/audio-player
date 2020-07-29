@@ -154,13 +154,23 @@
           "name": "height",
           "displayName": "Height",
           "type": "number",
-          "default": 2
+          "default": 2,
+          "control": {
+            "type": "slider",
+            "max": 5,
+            "min": 0
+          }
         },
         {
           "name": "markerSize",
           "displayName": "Marker Size",
           "type": "number",
-          "default": 10
+          "default": 10,
+          "control": {
+            "type": "slider",
+            "max": 20,
+            "min": 0
+          }
         },
         {
           "name": "markerColor",
@@ -229,6 +239,12 @@
           "default": true
         },
         {
+          "name": "iconSize",
+          "displayName": "Play/Pause Icon Size",
+          "type": "number",
+          "default": 28
+        },
+        {
           "name": "playIconName",
           "displayName": "Play Button Icon",
           "type": "icon",
@@ -272,6 +288,12 @@
           "name": "enabled",
           "type": "boolean",
           "default": true
+        },
+        {
+          "name": "iconSize",
+          "displayName": "Forward/Back Icon Size",
+          "type": "number",
+          "default": 28
         },
         {
           "name": "enableForward",
@@ -405,10 +427,16 @@
           "default": false
         },
         {
+          "name": "iconSize",
+          "displayName": "Left/Right Icon Size",
+          "type": "number",
+          "default": 28
+        },
+        {
           "name": "enableLeft",
           "displayName": "Enable Left Button",
           "type": "boolean",
-          "default": false
+          "default": true
         },
         {
           "name": "leftIconName",
@@ -440,7 +468,7 @@
           "name": "enableRight",
           "displayName": "Enable Right Button",
           "type": "boolean",
-          "default": false
+          "default": true
         },
         {
           "name": "rightIconName",

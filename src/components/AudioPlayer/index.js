@@ -159,6 +159,7 @@ class AudioPlayer extends Component {
         padding: 4,
         textAlign: 'center',
         fontWeight: 'bold',
+        paddingTop: 22,
       },
       subtitle: {
         color: subtitleColor,
@@ -175,46 +176,53 @@ class AudioPlayer extends Component {
         enabled: playPauseButtons.enabled,
         color: playPauseButtons.playColor,
         onPress: this.start,
+        iconSize: playPauseButtons.iconSize,
       },
       pauseButton: {
         name: playPauseButtons.pauseIconName,
         enabled: playPauseButtons.enabled,
         color: playPauseButtons.pauseColor,
         onPress: this.pause,
+        iconSize: playPauseButtons.iconSize,
       },
       forwardButton: {
         name: forwardBackButtons.forwardIconName,
         enabled: forwardBackButtons.enableForward && forwardBackButtons.enabled,
         color: forwardBackButtons.forwardColor,
         onPress: this.skip,
+        iconSize: forwardBackButtons.iconSize,
       },
       backButton: {
         name: forwardBackButtons.backIconName,
         enabled: forwardBackButtons.enableBack && forwardBackButtons.enabled,
         color: forwardBackButtons.backColor,
         onPress: this.rewind,
+        iconSize: forwardBackButtons.iconSize,
       },
       leftButton: {
         name: leftRightButtons.leftIconName,
         enabled: leftRightButtons.enableLeft && leftRightButtons.enabled,
         color: leftRightButtons.leftColor,
         onPress: leftRightButtons.leftAction,
+        iconSize: leftRightButtons.iconSize,
       },
       rightButton: {
         name: leftRightButtons.rightIconName,
         enabled: leftRightButtons.enableRight && leftRightButtons.enabled,
         color: leftRightButtons.rightColor,
         onPress: leftRightButtons.rightAction,
+        iconSize: leftRightButtons.iconSize,
       },
     }
     const placeholderAlbumArt =
-      'https://d1csarkz8obe9u.cloudfront.net/posterpreviews/cool-album-cover-design-template-3676481d61549c8e2d8fcc1b26c1f9d1.jpg?ts=1567083644'
-    // A little redundent, but various if statements control for positioning
+      'https://img.buzzfeed.com/buzzfeed-static/static/2020-03/5/23/enhanced/25a67c968a0a/enhanced-262-1583449224-1.png?downsize=900:*&output-format=auto&output-quality=auto'
+    const showArtwork = artwork.showArtwork && artwork.enabled
+    // A little redundant, but various if statements control for positioning
     // options chosen by customer.
     if (progressBar.position == 'aboveButtons') {
       return (
         <View style={styles.wrapper}>
-          {artwork.showArtwork ? (
+          {showArtwork ? (
             <Image
               source={{ uri: artwork.artworkURL }}
               style={dynamicStyles.artwork}
@@ -242,7 +250,7 @@ class AudioPlayer extends Component {
             updatePlaying={this.updatePlaying}
             updatePlayable={this.updatePlayable}
             width={_width}
-            autoplay
+            autoplay={autoplay}
             editor={editor}
           />
           <ControlScheme {...buttonConfig} {...this.state} />
@@ -251,7 +259,7 @@ class AudioPlayer extends Component {
     } else if (progressBar.position == 'aboveTitle') {
       return (
         <View style={styles.wrapper}>
-          {artwork.showArtwork ? (
+          {showArtwork ? (
             <Image
               source={{ uri: artwork.artworkURL }}
               style={dynamicStyles.artwork}
@@ -273,7 +281,7 @@ class AudioPlayer extends Component {
             updatePlaying={this.updatePlaying}
             updatePlayable={this.updatePlayable}
             width={_width}
-            autoplay
+            autoplay={autoplay}
             editor={editor}
           />
           {title != '' ? (
@@ -288,7 +296,7 @@ class AudioPlayer extends Component {
     } else {
       return (
         <View style={styles.wrapper}>
-          {artwork.showArtwork ? (
+          {showArtwork ? (
             <Image
               source={{ uri: artwork.artworkURL }}
               style={dynamicStyles.artwork}
@@ -317,7 +325,7 @@ class AudioPlayer extends Component {
             updatePlaying={this.updatePlaying}
             updatePlayable={this.updatePlayable}
             width={_width}
-            autoplay
+            autoplay={autoplay}
             editor={editor}
           />
         </View>
