@@ -4,7 +4,7 @@ set -x
 
 sed -i.bak 's/9.0/10.0/' ios/Podfile
 
-name="AdaloApp"
+name=$PROJECT_NAME
 
 
 
