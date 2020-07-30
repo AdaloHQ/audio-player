@@ -56,18 +56,23 @@ export default class AudioPlayerSub extends Component {
   }
 
   addUrl = url => {
+    console.log('addUrl, ', url)
     const { updatePlayable, updatePlaying, autoplay, editor } = this.props
     updatePlayable(false)
     let testSound = new Audio(url)
-    testSound.addEventListener('canplay', () => {
-      this.player.src = url
-      if (autoplay && !editor) {
-        updatePlaying(true)
-        this.player.play()
-      }
-      testSound.removeEventListener('canplay', () => {})
-      updatePlayable(true)
-    })
+    try {
+      testSound.addEventListener('loadedmetadata', () => {
+        this.player.src = url
+        if (autoplay && !editor) {
+          updatePlaying(true)
+          this.player.play()
+        }
+        testSound.removeEventListener('loadedmetadata', () => {})
+        updatePlayable(true)
+      })
+    } catch (err) {
+      console.error('audio player error! ', err)
+    }
   }
 
   // When the user clicks and holds on the slider
