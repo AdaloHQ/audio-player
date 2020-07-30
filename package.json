@@ -30,7 +30,7 @@
     "androidInstallScript": "./scripts/install_android.sh"
   },
   "devDependencies": {
-    "@adalo/cli": "^0.0.38",
+    "@adalo/cli": "^0.0.39",
     "@babel/core": "^7.1.2",
     "@babel/plugin-proposal-class-properties": "^7.1.0",
     "@babel/preset-env": "^7.0.0",
