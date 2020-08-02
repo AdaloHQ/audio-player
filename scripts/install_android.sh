@@ -8,4 +8,4 @@ sed -i.bak '/defaultConfig {/ a\
       multiDexEnabled true\
     ' android/app/build.gradle
 
-./$dir/background_control.sh
+$dir/background_control.sh

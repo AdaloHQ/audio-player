@@ -16,4 +16,4 @@ else
     plutil -insert UIBackgroundModes -xml "<array><string>audio</string></array>" ios/$name/Info.plist
 fi
 
-./$dir/background_control.sh
+$dir/background_control.sh
