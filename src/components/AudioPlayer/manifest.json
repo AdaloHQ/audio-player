@@ -33,7 +33,12 @@
       "name": "titleSize",
       "displayName": "Title Font Size",
       "type": "number",
-      "default": 16
+      "default": 16,
+      "control": {
+        "type": "slider",
+        "min": 0,
+        "max": 50
+      }
     },
     {
       "name": "subtitle",
@@ -51,7 +56,12 @@
       "name": "subtitleSize",
       "displayName": "Subtitle Font Size",
       "type": "number",
-      "default": 12
+      "default": 12,
+      "control": {
+        "type": "slider",
+        "min": 0,
+        "max": 40
+      }
     }
   ],
   "childComponents": [

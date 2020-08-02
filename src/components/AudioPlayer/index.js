@@ -234,9 +234,9 @@ class AudioPlayer extends Component {
     // options chosen by customer.
     if (progressBar.position == 'aboveButtons') {
       return (
-        <View style={styles.wrapper} onLayout={this.handleLayout}>
+        <View onLayout={this.handleLayout}>
           {width !== null && (
-            <View>
+            <View style={styles.wrapper}>
               {showArtwork ? (
                 <Image
                   source={{ uri: artwork.artworkURL }}
@@ -275,9 +275,9 @@ class AudioPlayer extends Component {
       )
     } else if (progressBar.position == 'aboveTitle') {
       return (
-        <View style={styles.wrapper} onLayout={this.handleLayout}>
+        <View onLayout={this.handleLayout}>
           {width !== null && (
-            <View>
+            <View style={styles.wrapper}>
               {showArtwork ? (
                 <Image
                   source={{ uri: artwork.artworkURL }}
@@ -316,9 +316,9 @@ class AudioPlayer extends Component {
       )
     } else {
       return (
-        <View style={styles.wrapper} onLayout={this.handleLayout}>
+        <View onLayout={this.handleLayout}>
           {width !== null && (
-            <View>
+            <View style={styles.wrapper}>
               {showArtwork ? (
                 <Image
                   source={{ uri: artwork.artworkURL }}

@@ -159,39 +159,35 @@ export default class AudioPlayerSub extends Component {
     return (
       <View style={(styles.wrapper, paddingStyles)}>
         <audio ref={ref => (this.player = ref)} />
-        {width !== null && (
-          <View>
-            <View style={styles.seekBar}>
-              <MultiSlider
-                enabledOne
-                min={0}
-                max={1}
-                values={[sliderValue]}
-                step={0.01}
-                sliderLength={trackLength}
-                enableLabel={false}
-                onValuesChangeStart={this.startSeek}
-                onValuesChange={this.seekChange}
-                onValuesChangeFinish={this.endSeek}
-                trackStyle={{
-                  backgroundColor: unfilledColor,
-                  height: height,
-                  borderRadius: progressRounding,
-                }}
-                selectedStyle={{
-                  backgroundColor: filledColor,
-                  height: height,
-                  borderRadius: progressRounding,
-                }}
-                markerStyle={markerStyle}
-              />
-            </View>
-            <View style={styles.timeText}>
-              <Text>{playedFormatted}</Text>
-              <Text>{durationFormatted}</Text>
-            </View>
-          </View>
-        )}
+        <View style={styles.seekBar}>
+          <MultiSlider
+            enabledOne
+            min={0}
+            max={1}
+            values={[sliderValue]}
+            step={0.01}
+            sliderLength={trackLength}
+            enableLabel={false}
+            onValuesChangeStart={this.startSeek}
+            onValuesChange={this.seekChange}
+            onValuesChangeFinish={this.endSeek}
+            trackStyle={{
+              backgroundColor: unfilledColor,
+              height: height,
+              borderRadius: progressRounding,
+            }}
+            selectedStyle={{
+              backgroundColor: filledColor,
+              height: height,
+              borderRadius: progressRounding,
+            }}
+            markerStyle={markerStyle}
+          />
+        </View>
+        <View style={styles.timeText}>
+          <Text>{playedFormatted}</Text>
+          <Text>{durationFormatted}</Text>
+        </View>
       </View>
     )
   }
