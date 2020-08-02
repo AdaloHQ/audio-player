@@ -144,37 +144,44 @@ class ProgressBar extends TrackPlayer.ProgressComponent {
     if (borderShadow) {
       markerStyle.shadowOffset.height = markerSize / 3
     }
+    const padding = Math.ceil(markerSize / 2)
+    const paddingStyles = { paddingLeft: padding, paddingRight: padding }
+    const trackLength = width - padding * 2
     return (
-      <View style={styles.wrapper}>
-        <View style={styles.seekBar}>
-          <MultiSlider
-            enabledOne
-            min={0}
-            max={1}
-            values={[sliderValue]}
-            step={0.01}
-            sliderLength={width - 10}
-            enableLabel={false}
-            onValuesChangeStart={this.startSeek}
-            onValuesChange={this.seek}
-            onValuesChangeFinish={this.endSeek}
-            trackStyle={{
-              backgroundColor: unfilledColor,
-              height: height,
-              borderRadius: progressRounding,
-            }}
-            selectedStyle={{
-              backgroundColor: filledColor,
-              height: height,
-              borderRadius: progressRounding,
-            }}
-            markerStyle={markerStyle}
-          />
-        </View>
-        <View style={styles.timeText}>
-          <Text>{playedFormatted}</Text>
-          <Text>{durationFormatted}</Text>
-        </View>
+      <View style={(styles.wrapper, paddingStyles)}>
+        {width !== null && (
+          <View>
+            <View style={styles.seekBar}>
+              <MultiSlider
+                enabledOne
+                min={0}
+                max={1}
+                values={[sliderValue]}
+                step={0.01}
+                sliderLength={trackLength}
+                enableLabel={false}
+                onValuesChangeStart={this.startSeek}
+                onValuesChange={this.seek}
+                onValuesChangeFinish={this.endSeek}
+                trackStyle={{
+                  backgroundColor: unfilledColor,
+                  height: height,
+                  borderRadius: progressRounding,
+                }}
+                selectedStyle={{
+                  backgroundColor: filledColor,
+                  height: height,
+                  borderRadius: progressRounding,
+                }}
+                markerStyle={markerStyle}
+              />
+            </View>
+            <View style={styles.timeText}>
+              <Text>{playedFormatted}</Text>
+              <Text>{durationFormatted}</Text>
+            </View>
+          </View>
+        )}
       </View>
     )
   }

@@ -152,38 +152,46 @@ export default class AudioPlayerSub extends Component {
     if (borderShadow) {
       markerStyle.shadowOffset.height = markerSize / 3
     }
+    const padding = Math.ceil(markerSize / 2)
+    const paddingStyles = { paddingLeft: padding, paddingRight: padding }
+    const trackLength = width - padding * 2
+    console.log('width: ', width)
     return (
-      <View style={styles.wrapper}>
+      <View style={(styles.wrapper, paddingStyles)}>
         <audio ref={ref => (this.player = ref)} />
-        <View style={styles.seekBar}>
-          <MultiSlider
-            enabledOne
-            min={0}
-            max={1}
-            values={[sliderValue]}
-            step={0.01}
-            sliderLength={width - 10}
-            enableLabel={false}
-            onValuesChangeStart={this.startSeek}
-            onValuesChange={this.seekChange}
-            onValuesChangeFinish={this.endSeek}
-            trackStyle={{
-              backgroundColor: unfilledColor,
-              height: height,
-              borderRadius: progressRounding,
-            }}
-            selectedStyle={{
-              backgroundColor: filledColor,
-              height: height,
-              borderRadius: progressRounding,
-            }}
-            markerStyle={markerStyle}
-          />
-        </View>
-        <View style={styles.timeText}>
-          <Text>{playedFormatted}</Text>
-          <Text>{durationFormatted}</Text>
-        </View>
+        {width !== null && (
+          <View>
+            <View style={styles.seekBar}>
+              <MultiSlider
+                enabledOne
+                min={0}
+                max={1}
+                values={[sliderValue]}
+                step={0.01}
+                sliderLength={trackLength}
+                enableLabel={false}
+                onValuesChangeStart={this.startSeek}
+                onValuesChange={this.seekChange}
+                onValuesChangeFinish={this.endSeek}
+                trackStyle={{
+                  backgroundColor: unfilledColor,
+                  height: height,
+                  borderRadius: progressRounding,
+                }}
+                selectedStyle={{
+                  backgroundColor: filledColor,
+                  height: height,
+                  borderRadius: progressRounding,
+                }}
+                markerStyle={markerStyle}
+              />
+            </View>
+            <View style={styles.timeText}>
+              <Text>{playedFormatted}</Text>
+              <Text>{durationFormatted}</Text>
+            </View>
+          </View>
+        )}
       </View>
     )
   }

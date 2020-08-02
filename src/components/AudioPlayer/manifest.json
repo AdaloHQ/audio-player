@@ -76,16 +76,15 @@
           "type": "text"
         },
         {
-          "name": "height",
-          "displayName": "Height",
+          "name": "artworkPercent",
+          "displayName": "Size (Percent of Width)",
           "type": "number",
-          "default": 250
-        },
-        {
-          "name": "width",
-          "displayName": "Width",
-          "type": "number",
-          "default": 250
+          "default": 80,
+          "control": {
+            "type": "slider",
+            "min": 0,
+            "max": 100
+          }
         },
         {
           "name": "artworkRounding",

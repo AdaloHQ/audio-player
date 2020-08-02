@@ -25,6 +25,17 @@ class AudioPlayer extends Component {
         subtitle,
         artwork: artwork.artworkURL,
       },
+      width: null,
+    }
+  }
+
+  // Taken from range-slider code Jeremy wrote to dynamically change width
+  handleLayout = ({ nativeEvent }) => {
+    const { width } = (nativeEvent && nativeEvent.layout) || {}
+    const { width: prevWidth } = this.state
+
+    if (width !== prevWidth) {
+      this.setState({ width })
     }
   }
 
@@ -140,18 +151,20 @@ class AudioPlayer extends Component {
       subtitleColor,
       subtitleSize,
       progressBar,
-      _width,
       playPauseButtons,
       forwardBackButtons,
       leftRightButtons,
       autoplay,
       editor,
     } = this.props
+    const { width } = this.state
+    const artworkWidth = (width * artwork.artworkPercent) / 100
     const dynamicStyles = {
       artwork: {
-        width: artwork.width,
-        height: artwork.height,
+        width: artworkWidth,
+        height: artworkWidth,
         borderRadius: artwork.artworkRounding,
+        alignSelf: 'center',
       },
       title: {
         color: titleColor,
@@ -221,113 +234,125 @@ class AudioPlayer extends Component {
     // options chosen by customer.
     if (progressBar.position == 'aboveButtons') {
       return (
-        <View style={styles.wrapper}>
-          {showArtwork ? (
-            <Image
-              source={{ uri: artwork.artworkURL }}
-              style={dynamicStyles.artwork}
-              defaultSource={placeholderAlbumArt}
-            />
-          ) : null}
-          {title != '' ? (
-            <Text style={dynamicStyles.title}>{title}</Text>
-          ) : null}
-          {subtitle != '' ? (
-            <Text style={dynamicStyles.subtitle}>{subtitle}</Text>
-          ) : null}
-          <AudioPlayerSub
-            {...progressBar}
-            played={this.state.played}
-            duration={this.state.duration}
-            progress={this.state.progress}
-            playing={this.state.playing}
-            track={this.state.track}
-            seek={this.seek}
-            ref={this.ref}
-            updateProgress={this.updateProgress}
-            updateDuration={this.updateDuration}
-            updatePlayed={this.updatePlayed}
-            updatePlaying={this.updatePlaying}
-            updatePlayable={this.updatePlayable}
-            width={_width}
-            autoplay={autoplay}
-            editor={editor}
-          />
-          <ControlScheme {...buttonConfig} {...this.state} />
+        <View style={styles.wrapper} onLayout={this.handleLayout}>
+          {width !== null && (
+            <View>
+              {showArtwork ? (
+                <Image
+                  source={{ uri: artwork.artworkURL }}
+                  style={dynamicStyles.artwork}
+                  defaultSource={placeholderAlbumArt}
+                />
+              ) : null}
+              {title != '' ? (
+                <Text style={dynamicStyles.title}>{title}</Text>
+              ) : null}
+              {subtitle != '' ? (
+                <Text style={dynamicStyles.subtitle}>{subtitle}</Text>
+              ) : null}
+              <AudioPlayerSub
+                {...progressBar}
+                played={this.state.played}
+                duration={this.state.duration}
+                progress={this.state.progress}
+                playing={this.state.playing}
+                track={this.state.track}
+                seek={this.seek}
+                ref={this.ref}
+                updateProgress={this.updateProgress}
+                updateDuration={this.updateDuration}
+                updatePlayed={this.updatePlayed}
+                updatePlaying={this.updatePlaying}
+                updatePlayable={this.updatePlayable}
+                width={width}
+                autoplay={autoplay}
+                editor={editor}
+              />
+              <ControlScheme {...buttonConfig} {...this.state} />
+            </View>
+          )}
         </View>
       )
     } else if (progressBar.position == 'aboveTitle') {
       return (
-        <View style={styles.wrapper}>
-          {showArtwork ? (
-            <Image
-              source={{ uri: artwork.artworkURL }}
-              style={dynamicStyles.artwork}
-              defaultSource={placeholderAlbumArt}
-            />
-          ) : null}
-          <AudioPlayerSub
-            {...progressBar}
-            played={this.state.played}
-            duration={this.state.duration}
-            progress={this.state.progress}
-            playing={this.state.playing}
-            track={this.state.track}
-            seek={this.seek}
-            ref={this.ref}
-            updateProgress={this.updateProgress}
-            updateDuration={this.updateDuration}
-            updatePlayed={this.updatePlayed}
-            updatePlaying={this.updatePlaying}
-            updatePlayable={this.updatePlayable}
-            width={_width}
-            autoplay={autoplay}
-            editor={editor}
-          />
-          {title != '' ? (
-            <Text style={dynamicStyles.title}>{title}</Text>
-          ) : null}
-          {subtitle != '' ? (
-            <Text style={dynamicStyles.subtitle}>{subtitle}</Text>
-          ) : null}
-          <ControlScheme {...buttonConfig} {...this.state} />
+        <View style={styles.wrapper} onLayout={this.handleLayout}>
+          {width !== null && (
+            <View>
+              {showArtwork ? (
+                <Image
+                  source={{ uri: artwork.artworkURL }}
+                  style={dynamicStyles.artwork}
+                  defaultSource={placeholderAlbumArt}
+                />
+              ) : null}
+              <AudioPlayerSub
+                {...progressBar}
+                played={this.state.played}
+                duration={this.state.duration}
+                progress={this.state.progress}
+                playing={this.state.playing}
+                track={this.state.track}
+                seek={this.seek}
+                ref={this.ref}
+                updateProgress={this.updateProgress}
+                updateDuration={this.updateDuration}
+                updatePlayed={this.updatePlayed}
+                updatePlaying={this.updatePlaying}
+                updatePlayable={this.updatePlayable}
+                width={width}
+                autoplay={autoplay}
+                editor={editor}
+              />
+              {title != '' ? (
+                <Text style={dynamicStyles.title}>{title}</Text>
+              ) : null}
+              {subtitle != '' ? (
+                <Text style={dynamicStyles.subtitle}>{subtitle}</Text>
+              ) : null}
+              <ControlScheme {...buttonConfig} {...this.state} />
+            </View>
+          )}
         </View>
       )
     } else {
       return (
-        <View style={styles.wrapper}>
-          {showArtwork ? (
-            <Image
-              source={{ uri: artwork.artworkURL }}
-              style={dynamicStyles.artwork}
-              defaultSource={placeholderAlbumArt}
-            />
-          ) : null}
-          {title != '' ? (
-            <Text style={dynamicStyles.title}>{title}</Text>
-          ) : null}
-          {subtitle != '' ? (
-            <Text style={dynamicStyles.subtitle}>{subtitle}</Text>
-          ) : null}
-          <ControlScheme {...buttonConfig} {...this.state} />
-          <AudioPlayerSub
-            {...progressBar}
-            played={this.state.played}
-            duration={this.state.duration}
-            progress={this.state.progress}
-            playing={this.state.playing}
-            track={this.state.track}
-            seek={this.seek}
-            ref={this.ref}
-            updateProgress={this.updateProgress}
-            updateDuration={this.updateDuration}
-            updatePlayed={this.updatePlayed}
-            updatePlaying={this.updatePlaying}
-            updatePlayable={this.updatePlayable}
-            width={_width}
-            autoplay={autoplay}
-            editor={editor}
-          />
+        <View style={styles.wrapper} onLayout={this.handleLayout}>
+          {width !== null && (
+            <View>
+              {showArtwork ? (
+                <Image
+                  source={{ uri: artwork.artworkURL }}
+                  style={dynamicStyles.artwork}
+                  defaultSource={placeholderAlbumArt}
+                />
+              ) : null}
+              {title != '' ? (
+                <Text style={dynamicStyles.title}>{title}</Text>
+              ) : null}
+              {subtitle != '' ? (
+                <Text style={dynamicStyles.subtitle}>{subtitle}</Text>
+              ) : null}
+              <ControlScheme {...buttonConfig} {...this.state} />
+              <AudioPlayerSub
+                {...progressBar}
+                played={this.state.played}
+                duration={this.state.duration}
+                progress={this.state.progress}
+                playing={this.state.playing}
+                track={this.state.track}
+                seek={this.seek}
+                ref={this.ref}
+                updateProgress={this.updateProgress}
+                updateDuration={this.updateDuration}
+                updatePlayed={this.updatePlayed}
+                updatePlaying={this.updatePlaying}
+                updatePlayable={this.updatePlayable}
+                width={width}
+                autoplay={autoplay}
+                editor={editor}
+              />
+            </View>
+          )}
         </View>
       )
     }
