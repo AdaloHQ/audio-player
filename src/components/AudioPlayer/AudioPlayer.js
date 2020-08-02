@@ -29,7 +29,6 @@ class AudioPlayerSub extends Component {
         TrackPlayer.CAPABILITY_PAUSE,
       ],
     })
-    TrackPlayer.registerPlaybackService(() => require('./service.js'))
     const { track, playing, autoplay } = this.props
     // Adds the specified song to the track player to be ready to play
     await TrackPlayer.add({
