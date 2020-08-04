@@ -75,6 +75,9 @@ class ProgressBar extends TrackPlayer.ProgressComponent {
       recentlySeeked,
     } = this.state
     let progress = this.getProgress()
+    if (!duration) duration = 0
+    if (!played) played = 0
+    if (!progress) progress = 0
     const {
       updateDuration,
       updateProgress,
@@ -111,9 +114,10 @@ class ProgressBar extends TrackPlayer.ProgressComponent {
         : played
     // Formats duration and played using "hhmmss", padding the numbers and
     // presenting it as a string.
-    const durationFormatted = hhmmss(
+    let durationFormatted = hhmmss(
       endTimeFormat == 1 ? duration : duration - playedIfSeeked
     )
+    if (durationFormatted == '-1:-1:-1') durationFormatted = '0:00'
     const playedFormatted =
       (this.state.seeking || !playerUpdatedAfterSeek) && recentlySeeked
         ? hhmmss(this.state.seekingValue * duration)

@@ -1,7 +1,7 @@
 {
   "displayName": "Audio Player",
-  "defaultWidth": 250,
-  "defaultHeight": 400,
+  "defaultWidth": 300,
+  "defaultHeight": 450,
   "resizeY": true,
   "icon": "./icon.png",
   "components": "./index.js",
@@ -251,7 +251,12 @@
           "name": "iconSize",
           "displayName": "Play/Pause Icon Size",
           "type": "number",
-          "default": 28
+          "default": 28,
+          "control": {
+            "type": "slider",
+            "max": 50,
+            "min": 0
+          }
         },
         {
           "name": "playIconName",
@@ -302,7 +307,12 @@
           "name": "iconSize",
           "displayName": "Forward/Back Icon Size",
           "type": "number",
-          "default": 28
+          "default": 28,
+          "control": {
+            "type": "slider",
+            "max": 50,
+            "min": 0
+          }
         },
         {
           "name": "enableForward",
@@ -439,7 +449,12 @@
           "name": "iconSize",
           "displayName": "Left/Right Icon Size",
           "type": "number",
-          "default": 28
+          "default": 28,
+          "control": {
+            "type": "slider",
+            "max": 50,
+            "min": 0
+          }
         },
         {
           "name": "enableLeft",
