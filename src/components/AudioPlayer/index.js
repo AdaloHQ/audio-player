@@ -3,6 +3,10 @@ import { Text, View, Image, StyleSheet } from 'react-native'
 import AudioPlayerSub from './AudioPlayer'
 import ControlScheme from './ControlScheme'
 
+Number.prototype.round = function(places) {
+  return +(Math.round(this + 'e+' + places) + 'e-' + places)
+}
+
 class AudioPlayer extends Component {
   constructor(props) {
     super(props)
@@ -47,7 +51,8 @@ class AudioPlayer extends Component {
     const { playable } = this.state
     if (!playable) return
     if (playAction) {
-      playAction()
+      const { played, duration, progress } = this.state
+      playAction(played.round(2), duration.round(2), progress.round(3))
     }
     this.setState({
       playing: true,
@@ -62,7 +67,10 @@ class AudioPlayer extends Component {
     } = this.props
     const { playable } = this.state
     if (!playable) return
-    if (pauseAction) pauseAction()
+    if (pauseAction) {
+      const { played, duration, progress } = this.state
+      pauseAction(played.round(2), duration.round(2), progress.round(3))
+    }
     this.setState({
       playing: false,
     })
@@ -133,6 +141,11 @@ class AudioPlayer extends Component {
   }
   updatePlayable = bool => {
     this.setState({ playable: bool })
+  }
+
+  endSong = () => {
+    const { endAction } = this.props
+    if (endAction) endAction()
   }
 
   // Delcares ref to audio player component. Enables index to do playback
@@ -267,6 +280,7 @@ class AudioPlayer extends Component {
                 width={width}
                 autoplay={autoplay}
                 editor={editor}
+                endSong={this.endSong}
               />
               <ControlScheme {...buttonConfig} {...this.state} />
             </View>

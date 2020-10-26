@@ -43,7 +43,9 @@ class ProgressBar extends TrackPlayer.ProgressComponent {
   // Prevents an infinite loop.
   shouldComponentUpdate(nextProps) {
     //played, duration, progress
-    const { played, duration, progress } = this.props
+    const { played, duration, progress, endSong } = this.props
+    // Check if the song has ended, and if so call the endSong function from index
+    if (Math.round(progress * 100) / 100 === 1) endSong()
     if (
       nextProps.played != played ||
       nextProps.duration != duration ||
