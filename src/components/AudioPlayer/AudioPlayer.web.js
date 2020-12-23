@@ -22,7 +22,7 @@ export default class AudioPlayerSub extends Component {
       updateDuration(duration)
     })
     this.player.addEventListener('error', e => {
-      console.log('Audio player error!!! ', e.target.error)
+      console.error('Audio player error!!! ', e.target.error)
       this.player.src = ''
     })
     const {
@@ -41,6 +41,8 @@ export default class AudioPlayerSub extends Component {
     const {
       track: { url },
       playing,
+      progress,
+      endSong,
     } = this.props
     const {
       track: { url: prevUrl },
@@ -53,10 +55,11 @@ export default class AudioPlayerSub extends Component {
       if (playing && this.player.src) this.player.play()
       else if (!playing && this.player.src) this.player.pause()
     }
+    // Check if the song has ended, and if so call the endSong function from index
+    if (Math.round(progress * 100) / 100 === 1) endSong()
   }
 
   addUrl = url => {
-    console.log('addUrl, ', url)
     const { updatePlayable, updatePlaying, autoplay, editor } = this.props
     updatePlayable(false)
     let testSound = new Audio(url)
@@ -155,7 +158,6 @@ export default class AudioPlayerSub extends Component {
     const padding = Math.ceil(markerSize / 2)
     const paddingStyles = { paddingLeft: padding, paddingRight: padding }
     const trackLength = width - padding * 2
-    console.log('width: ', width)
     return (
       <View style={(styles.wrapper, paddingStyles)}>
         <audio ref={ref => (this.player = ref)} />
