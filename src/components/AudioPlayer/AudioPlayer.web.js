@@ -10,7 +10,7 @@ export default class AudioPlayerSub extends Component {
 
   componentDidMount() {
     this.player.addEventListener('timeupdate', e => {
-      const { updatePlayed, updateProgress, endSong } = this.props
+      const { updatePlayed, updateProgress } = this.props
       const { duration, currentTime } = e.target
       updatePlayed(currentTime)
       const progress = currentTime / duration

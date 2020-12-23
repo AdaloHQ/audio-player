@@ -316,6 +316,7 @@ class AudioPlayer extends Component {
                 width={width}
                 autoplay={autoplay}
                 editor={editor}
+                endSong={this.endSong}
               />
               {title != '' ? (
                 <Text style={dynamicStyles.title}>{title}</Text>
@@ -364,6 +365,7 @@ class AudioPlayer extends Component {
                 width={width}
                 autoplay={autoplay}
                 editor={editor}
+                endSong={this.endSong}
               />
             </View>
           )}
