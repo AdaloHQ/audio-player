@@ -180,20 +180,33 @@ class AudioPlayer extends Component {
         alignSelf: 'center',
       },
       title: {
-        color: titleColor,
-        fontSize: titleSize,
+        color: titleColor ? titleColor : '#424242',
+        fontSize: titleSize ? titleSize : 16,
         padding: 4,
         textAlign: 'center',
         fontWeight: 'bold',
         paddingTop: 22,
       },
       subtitle: {
-        color: subtitleColor,
-        fontSize: subtitleSize,
+        color: subtitleColor ? subtitleColor : '#424242',
+        fontSize: subtitleSize ? subtitleSize : 12,
         padding: 4,
         textAlign: 'center',
       },
     }
+
+    //custom fonts
+    if (this.props.styles) {
+      dynamicStyles.title = {
+        ...dynamicStyles.title,
+        ...this.props.styles.title,
+      }
+      dynamicStyles.subtitle = {
+        ...dynamicStyles.subtitle,
+        ...this.props.styles.subtitle,
+      }
+    }
+
     const buttonConfig = {
       playButton: {
         name: playPauseButtons.playIconName,
