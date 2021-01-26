@@ -69,6 +69,7 @@ class ProgressBar extends TrackPlayer.ProgressComponent {
       endTimeFormat,
       markerColor,
       width,
+      _fonts,
     } = this.props
     let {
       position: played,
@@ -153,6 +154,10 @@ class ProgressBar extends TrackPlayer.ProgressComponent {
     const padding = Math.ceil(markerSize / 2)
     const paddingStyles = { paddingLeft: padding, paddingRight: padding }
     const trackLength = width - padding * 2
+    const timeFontStyles = {
+      fontFamily: _fonts.body,
+    }
+
     return (
       <View style={(styles.wrapper, paddingStyles)}>
         {width !== null && (
@@ -183,8 +188,8 @@ class ProgressBar extends TrackPlayer.ProgressComponent {
               />
             </View>
             <View style={styles.timeText}>
-              <Text>{playedFormatted}</Text>
-              <Text>{durationFormatted}</Text>
+              <Text style={timeFontStyles}>{playedFormatted}</Text>
+              <Text style={timeFontStyles}>{durationFormatted}</Text>
             </View>
           </View>
         )}

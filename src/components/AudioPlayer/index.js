@@ -169,6 +169,7 @@ class AudioPlayer extends Component {
       leftRightButtons,
       autoplay,
       editor,
+      _fonts,
     } = this.props
     const { width } = this.state
     const artworkWidth = (width * artwork.artworkPercent) / 100
@@ -205,6 +206,9 @@ class AudioPlayer extends Component {
         ...dynamicStyles.subtitle,
         ...this.props.styles.subtitle,
       }
+    } else if (_fonts) {
+      dynamicStyles.title.fontFamily = _fonts.body
+      dynamicStyles.subtitle.fontFamily = _fonts.body
     }
 
     const buttonConfig = {
@@ -294,6 +298,7 @@ class AudioPlayer extends Component {
                 autoplay={autoplay}
                 editor={editor}
                 endSong={this.endSong}
+                _fonts={_fonts}
               />
               <ControlScheme {...buttonConfig} {...this.state} />
             </View>
@@ -330,6 +335,7 @@ class AudioPlayer extends Component {
                 autoplay={autoplay}
                 editor={editor}
                 endSong={this.endSong}
+                _fonts={_fonts}
               />
               {title != '' ? (
                 <Text style={dynamicStyles.title}>{title}</Text>
@@ -379,6 +385,7 @@ class AudioPlayer extends Component {
                 autoplay={autoplay}
                 editor={editor}
                 endSong={this.endSong}
+                _fonts={_fonts}
               />
             </View>
           )}
