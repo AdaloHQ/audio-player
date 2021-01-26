@@ -21,46 +21,24 @@
       "name": "title",
       "displayName": "Song Title",
       "type": "text",
-      "default": ""
-    },
-    {
-      "name": "titleColor",
-      "displayName": "Title Color",
-      "type": "color",
-      "default": "@text"
-    },
-    {
-      "name": "titleSize",
-      "displayName": "Title Font Size",
-      "type": "number",
-      "default": 16,
-      "control": {
-        "type": "slider",
-        "min": 0,
-        "max": 50
+      "default": "",
+      "styles": {
+        "fontFamily": "@body",
+        "fontWeight": "bold",
+        "fontSize": "16",
+        "color": "#424242"
       }
     },
     {
       "name": "subtitle",
       "displayName": "Subtitle (Artist Name, etc.)",
       "type": "text",
-      "default": ""
-    },
-    {
-      "name": "subtitleColor",
-      "displayName": "Subtitle Color",
-      "type": "color",
-      "default": "@text"
-    },
-    {
-      "name": "subtitleSize",
-      "displayName": "Subtitle Font Size",
-      "type": "number",
-      "default": 12,
-      "control": {
-        "type": "slider",
-        "min": 0,
-        "max": 40
+      "default": "",
+      "styles": {
+        "fontFamily": "@body",
+        "fontWeight": "normal",
+        "fontSize": "12",
+        "color": "#424242"
       }
     },
     {

@@ -169,6 +169,7 @@ class AudioPlayer extends Component {
       leftRightButtons,
       autoplay,
       editor,
+      _fonts,
     } = this.props
     const { width } = this.state
     const artworkWidth = (width * artwork.artworkPercent) / 100
@@ -180,20 +181,36 @@ class AudioPlayer extends Component {
         alignSelf: 'center',
       },
       title: {
-        color: titleColor,
-        fontSize: titleSize,
+        color: titleColor ? titleColor : '#424242',
+        fontSize: titleSize ? titleSize : 16,
         padding: 4,
         textAlign: 'center',
         fontWeight: 'bold',
         paddingTop: 22,
       },
       subtitle: {
-        color: subtitleColor,
-        fontSize: subtitleSize,
+        color: subtitleColor ? subtitleColor : '#424242',
+        fontSize: subtitleSize ? subtitleSize : 12,
         padding: 4,
         textAlign: 'center',
       },
     }
+
+    //custom fonts
+    if (this.props.styles) {
+      dynamicStyles.title = {
+        ...dynamicStyles.title,
+        ...this.props.styles.title,
+      }
+      dynamicStyles.subtitle = {
+        ...dynamicStyles.subtitle,
+        ...this.props.styles.subtitle,
+      }
+    } else if (_fonts) {
+      dynamicStyles.title.fontFamily = _fonts.body
+      dynamicStyles.subtitle.fontFamily = _fonts.body
+    }
+
     const buttonConfig = {
       playButton: {
         name: playPauseButtons.playIconName,
@@ -281,6 +298,7 @@ class AudioPlayer extends Component {
                 autoplay={autoplay}
                 editor={editor}
                 endSong={this.endSong}
+                _fonts={_fonts}
               />
               <ControlScheme {...buttonConfig} {...this.state} />
             </View>
@@ -317,6 +335,7 @@ class AudioPlayer extends Component {
                 autoplay={autoplay}
                 editor={editor}
                 endSong={this.endSong}
+                _fonts={_fonts}
               />
               {title != '' ? (
                 <Text style={dynamicStyles.title}>{title}</Text>
@@ -366,6 +385,7 @@ class AudioPlayer extends Component {
                 autoplay={autoplay}
                 editor={editor}
                 endSong={this.endSong}
+                _fonts={_fonts}
               />
             </View>
           )}

@@ -122,6 +122,7 @@ export default class AudioPlayerSub extends Component {
       endTimeFormat,
       markerColor,
       width,
+      _fonts,
     } = this.props
     // Formats duration and played using "hhmmss", padding the numbers and
     // presenting it as a string.
@@ -158,6 +159,9 @@ export default class AudioPlayerSub extends Component {
     const padding = Math.ceil(markerSize / 2)
     const paddingStyles = { paddingLeft: padding, paddingRight: padding }
     const trackLength = width - padding * 2
+    const timeFontStyles = {
+      fontFamily: _fonts.body,
+    }
     return (
       <View style={(styles.wrapper, paddingStyles)}>
         <audio ref={ref => (this.player = ref)} />
@@ -187,8 +191,8 @@ export default class AudioPlayerSub extends Component {
           />
         </View>
         <View style={styles.timeText}>
-          <Text>{playedFormatted}</Text>
-          <Text>{durationFormatted}</Text>
+          <Text style={timeFontStyles}>{playedFormatted}</Text>
+          <Text style={timeFontStyles}>{durationFormatted}</Text>
         </View>
       </View>
     )
