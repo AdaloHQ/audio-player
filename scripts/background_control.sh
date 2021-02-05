@@ -9,6 +9,6 @@ import TrackPlayer from \"react-native-track-player\";" index.js
 
 sed -i.bak "/registerComponent/a\\
 TrackPlayer.registerPlaybackService(() =>\
-  require('./node_modules/@adalo-components/adalo-audio-player/src/components/AudioPlayer/service.js'),\
+  require('./node_modules/@adalo/audio-player/src/components/AudioPlayer/service.js'),\
 );
 " index.js
