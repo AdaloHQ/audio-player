@@ -39,24 +39,41 @@ export default class AudioPlayerSub extends Component {
 
   componentDidUpdate(prevProps) {
     const {
-      track: { url },
+      track: { url, title: title },
       playing,
       progress,
-      endSong,
+      updatePlaying,
+      topScreen,
     } = this.props
     const {
-      track: { url: prevUrl },
+      track: { url: prevUrl, title: prevTitle },
       playing: prevPlaying,
     } = prevProps
+
     if (url !== prevUrl) {
       this.addUrl(url)
     }
+
     if (playing !== prevPlaying) {
       if (playing && this.player.src) this.player.play()
       else if (!playing && this.player.src) this.player.pause()
     }
-    // Check if the song has ended, and if so call the endSong function from index
-    if (Math.round(progress * 100) / 100 === 1) endSong()
+
+    // If song has ended, reset progress and trigger end action
+    if (topScreen && Math.round(progress * 10000) / 10000 === 1) {
+      const { updatePlayed, updateProgress, endSong } = this.props
+      this.player.currentTime = 0
+      updatePlayed(0)
+      updateProgress(0)
+
+      endSong()
+    }
+
+    // Pauses video when navigating to different screen
+    if (!topScreen && playing) {
+      this.player.pause()
+      updatePlaying(false)
+    }
   }
 
   addUrl = url => {
@@ -126,6 +143,7 @@ export default class AudioPlayerSub extends Component {
     } = this.props
     // Formats duration and played using "hhmmss", padding the numbers and
     // presenting it as a string.
+
     const durationFormatted = hhmmss(
       endTimeFormat == 1 ? duration : duration - played
     )
@@ -162,6 +180,7 @@ export default class AudioPlayerSub extends Component {
     const timeFontStyles = {
       fontFamily: _fonts.body,
     }
+
     return (
       <View style={(styles.wrapper, paddingStyles)}>
         <audio ref={ref => (this.player = ref)} />
