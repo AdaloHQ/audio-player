@@ -63,7 +63,7 @@ class AudioPlayerSub extends Component {
 
     // ensure play/pause button matches playing prop
     let state = await TrackPlayer.getState()
-    if (state === 'playing' && !playing) {
+    if (state === TrackPlayer.STATE_PLAYING && !playing) {
       const { updatePlaying } = this.props
       updatePlaying(true)
     }
@@ -149,7 +149,7 @@ class AudioPlayerSub extends Component {
 
     // ensure play/pause button matches playing prop
     let playerState = await TrackPlayer.getState()
-    if (playerState == 'playing' && !playing) {
+    if (playerState == TrackPlayer.STATE_PLAYING && !playing) {
       updatePlaying(true)
     }
 
