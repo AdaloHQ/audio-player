@@ -113,7 +113,6 @@ class ProgressBar extends TrackPlayer.ProgressComponent {
       updatePlayed,
       duration: propDuration,
       played: propPlayed,
-      progress: propProgress,
     } = this.props
 
     // If track has changed, update the duration

@@ -69,7 +69,7 @@ export default class AudioPlayerSub extends Component {
       endSong()
     }
 
-    // Pauses video when navigating to different screen
+    // Pauses audio when navigating to different screen
     if (!topScreen && playing) {
       this.player.pause()
       updatePlaying(false)

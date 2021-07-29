@@ -42,7 +42,7 @@ class AudioPlayerSub extends Component {
     // Adds the specified song to the track player to be ready to play
     await TrackPlayer.add({
       // Every track needs a unique id, not really used anywhere here though
-      id: id,
+      id,
       url: track.url,
       title: track.title,
       artist: track.subtitle,
@@ -105,7 +105,7 @@ class AudioPlayerSub extends Component {
     const id = await TrackPlayer.getCurrentTrack()
     const oldTrack = await TrackPlayer.getTrack(id)
 
-    if (topScreen && !this.state.switching && oldTrack?.url != track.url) {
+    if (topScreen && !this.state.switching && oldTrack?.url !== track.url) {
       this.setState({ switching: true })
 
       const id = uuid()
@@ -149,7 +149,7 @@ class AudioPlayerSub extends Component {
 
     // ensure play/pause button matches playing prop
     let playerState = await TrackPlayer.getState()
-    if (playerState == TrackPlayer.STATE_PLAYING && !playing) {
+    if (playerState === TrackPlayer.STATE_PLAYING && !playing) {
       updatePlaying(true)
     }
 
