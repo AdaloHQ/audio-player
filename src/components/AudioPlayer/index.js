@@ -269,7 +269,7 @@ class AudioPlayer extends Component {
     const showArtwork = artwork.showArtwork && artwork.enabled
     // A little redundant, but various if statements control for positioning
     // options chosen by customer.
-    if (progressBar.position == 'aboveButtons') {
+    if (progressBar.position === 'aboveButtons') {
       return (
         <View onLayout={this.handleLayout}>
           {width !== null && (
@@ -316,7 +316,7 @@ class AudioPlayer extends Component {
           )}
         </View>
       )
-    } else if (progressBar.position == 'aboveTitle') {
+    } else if (progressBar.position === 'aboveTitle') {
       return (
         <View onLayout={this.handleLayout}>
           {width !== null && (

@@ -55,14 +55,7 @@ class ProgressBar extends TrackPlayer.ProgressComponent {
   // between the new props and the old props, don't rerender.
   // Prevents an infinite loop.
   shouldComponentUpdate(nextProps) {
-    const {
-      played,
-      duration,
-      progress,
-      topScreen,
-      switching,
-      startSwitch,
-    } = this.props
+    const { played, duration, progress, topScreen, startSwitch } = this.props
 
     // if song ended, reset track progress and call the endSong function from index.js
     if (Math.round(progress * 100) / 100 === 1) {
@@ -148,9 +141,9 @@ class ProgressBar extends TrackPlayer.ProgressComponent {
     // Formats duration and played using "hhmmss", padding the numbers and
     // presenting it as a string.
     let durationFormatted = hhmmss(
-      endTimeFormat == 1 ? duration : duration - playedIfSeeked
+      endTimeFormat === 1 ? duration : duration - playedIfSeeked
     )
-    if (durationFormatted == '-1:-1:-1') durationFormatted = '0:00'
+    if (durationFormatted === '-1:-1:-1') durationFormatted = '0:00'
     const playedFormatted =
       (this.state.seeking || !playerUpdatedAfterSeek) && recentlySeeked
         ? hhmmss(this.state.seekingValue * duration)

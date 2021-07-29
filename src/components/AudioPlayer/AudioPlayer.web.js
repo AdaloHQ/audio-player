@@ -145,7 +145,7 @@ export default class AudioPlayerSub extends Component {
     // presenting it as a string.
 
     const durationFormatted = hhmmss(
-      endTimeFormat == 1 ? duration : duration - played
+      endTimeFormat === 1 ? duration : duration - played
     )
     const playedFormatted = this.state.seeking
       ? hhmmss(this.state.seekingValue * duration)

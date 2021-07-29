@@ -21,8 +21,6 @@ class AudioPlayerSub extends Component {
       // Whether the player should stop running when the app is closed on Android
       stopWithApp: true,
       // An array of media controls capabilities
-      // Can contain CAPABILITY_PLAY, CAPABILITY_PAUSE, CAPABILITY_STOP, CAPABILITY_SEEK_TO,
-      // CAPABILITY_SKIP_TO_NEXT, CAPABILITY_SKIP_TO_PREVIOUS, CAPABILITY_SET_RATING
       capabilities: [
         TrackPlayer.CAPABILITY_PLAY,
         TrackPlayer.CAPABILITY_PAUSE,
@@ -49,6 +47,7 @@ class AudioPlayerSub extends Component {
       artwork: track.artwork,
     })
 
+    // only play when track is ready
     let isReady = (await TrackPlayer.getState()) === TrackPlayer.STATE_READY
     while (!isReady) {
       isReady = (await TrackPlayer.getState()) === TrackPlayer.STATE_READY
@@ -85,7 +84,6 @@ class AudioPlayerSub extends Component {
   }
 
   checkTrack = async () => {
-    // checkTrack = async (prevProps) => {
     /*
     Check if the current track in TrackPlayer (oldTrack) is different
     than the track in props. This handles the case where a user
@@ -120,9 +118,9 @@ class AudioPlayerSub extends Component {
       await TrackPlayer.skip(id)
 
       //check that new track is ready before playing
-      let isReady = (await TrackPlayer.getState()) == TrackPlayer.STATE_READY
+      let isReady = (await TrackPlayer.getState()) === TrackPlayer.STATE_READY
       while (!isReady) {
-        isReady = (await TrackPlayer.getState()) == TrackPlayer.STATE_READY
+        isReady = (await TrackPlayer.getState()) === TrackPlayer.STATE_READY
       }
 
       // reset prevProgress if already
@@ -135,7 +133,7 @@ class AudioPlayerSub extends Component {
         updatePlayed(newPlayed)
         updateProgress(prevProgress)
         updatePrevProgress(0)
-        const abc = await TrackPlayer.seekTo(newPlayed)
+        await TrackPlayer.seekTo(newPlayed)
       }
 
       // If player was already set to play, start playing
