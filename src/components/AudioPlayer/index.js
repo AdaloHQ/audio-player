@@ -177,6 +177,7 @@ class AudioPlayer extends Component {
       _fonts,
       active,
       topScreen,
+      backgroundAudio,
     } = this.props
     const { width } = this.state
     const artworkWidth = (width * artwork.artworkPercent) / 100
@@ -310,6 +311,11 @@ class AudioPlayer extends Component {
                 _fonts={_fonts}
                 active={active}
                 topScreen={topScreen}
+                backgroundAudio={
+                  typeof backgroundAudio !== 'undefined'
+                    ? backgroundAudio
+                    : true
+                }
               />
               <ControlScheme {...buttonConfig} {...this.state} />
             </View>
@@ -351,6 +357,11 @@ class AudioPlayer extends Component {
                 _fonts={_fonts}
                 active={active}
                 topScreen={topScreen}
+                backgroundAudio={
+                  typeof backgroundAudio !== 'undefined'
+                    ? backgroundAudio
+                    : true
+                }
               />
               {title != '' ? (
                 <Text style={dynamicStyles.title}>{title}</Text>
@@ -405,6 +416,11 @@ class AudioPlayer extends Component {
                 _fonts={_fonts}
                 active={active}
                 topScreen={topScreen}
+                backgroundAudio={
+                  typeof backgroundAudio !== 'undefined'
+                    ? backgroundAudio
+                    : true
+                }
               />
             </View>
           )}

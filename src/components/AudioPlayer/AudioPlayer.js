@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import TrackPlayer, { getCurrentTrack } from 'react-native-track-player'
+import TrackPlayer from 'react-native-track-player'
 import { v4 as uuid } from 'uuid'
 import ProgressBar from './ProgressBar'
 
@@ -35,11 +35,9 @@ class AudioPlayerSub extends Component {
 
     const { track, playing, autoplay, updatePlaying } = this.props
 
-    const id = uuid()
-
     // Adds the specified song to the track player to be ready to play
+    const id = uuid()
     await TrackPlayer.add({
-      // Every track needs a unique id, not really used anywhere here though
       id,
       url: track.url,
       title: track.title,
@@ -56,14 +54,12 @@ class AudioPlayerSub extends Component {
     // If player was already set to play or set to autoplay, start playing
     if (playing || autoplay) {
       await TrackPlayer.play()
-      this.setState({ startSwitch: false })
       updatePlaying(true)
     }
 
     // ensure play/pause button matches playing prop
     let state = await TrackPlayer.getState()
     if (state === TrackPlayer.STATE_PLAYING && !playing) {
-      const { updatePlaying } = this.props
       updatePlaying(true)
     }
 
@@ -85,7 +81,7 @@ class AudioPlayerSub extends Component {
 
   checkTrack = async () => {
     /*
-    Check if the current track in TrackPlayer (oldTrack) is different
+    Check if the track in TrackPlayer (oldTrack) is different
     than the track in props. This handles the case where a user
     switches to a screen where the component is already rendered
     (example: using the back button)
@@ -98,6 +94,7 @@ class AudioPlayerSub extends Component {
       prevProgress,
       duration,
       autoplay,
+      backgroundAudio,
     } = this.props
 
     const id = await TrackPlayer.getCurrentTrack()
@@ -116,6 +113,11 @@ class AudioPlayerSub extends Component {
       })
 
       await TrackPlayer.skip(id)
+
+      if (backgroundAudio) {
+        await TrackPlayer.pause()
+        this.setState({ playing: false })
+      }
 
       //check that new track is ready before playing
       let isReady = (await TrackPlayer.getState()) === TrackPlayer.STATE_READY
@@ -168,11 +170,14 @@ class AudioPlayerSub extends Component {
       updatePlaying,
     } = this.props
 
-    // pauses track when changing screens
-    if (!nextProps.active && active !== nextProps.active && playing) {
-      TrackPlayer.pause()
-      updatePlaying(false)
-      this.setState({ startSwitch: true })
+    // when changing screens
+    if (active && !nextProps.active) {
+      // pause track if needed
+      if (playing && !nextProps.backgroundAudio) {
+        TrackPlayer.pause()
+        updatePlaying(false)
+        this.setState({ startSwitch: true })
+      }
       updatePrevProgress(progress)
     }
 
@@ -186,7 +191,7 @@ class AudioPlayerSub extends Component {
     this.checkTrack(prevProps)
 
     // Update play/pause if it changed
-    if (prevProps.playing != playing) {
+    if (prevProps.playing !== playing) {
       playing ? TrackPlayer.play() : TrackPlayer.pause()
     }
   }

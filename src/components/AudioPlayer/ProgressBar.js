@@ -1,15 +1,16 @@
 import React from 'react'
 import { Text, View, StyleSheet } from 'react-native'
-import TrackPlayer, { STATE_BUFFERING } from 'react-native-track-player'
+import TrackPlayer from 'react-native-track-player'
 import MultiSlider from '@ptomasroos/react-native-multi-slider'
 
 // Based off of the web version, with a few major differences
 class ProgressBar extends TrackPlayer.ProgressComponent {
   constructor(props) {
     super(props)
-    state = {
+    this.state = {
       seeking: false,
       seekingValue: 0,
+      ending: false,
     }
   }
 
@@ -43,11 +44,14 @@ class ProgressBar extends TrackPlayer.ProgressComponent {
   // resets progress to zero and calls on the action for the end of a song
   endTrack = async () => {
     const { updatePlayed, updateProgress, topScreen, endSong } = this.props
+    this.setState({ ending: true })
+
     updateProgress(0)
     updatePlayed(0)
     await TrackPlayer.seekTo(0)
-
     if (topScreen) endSong()
+
+    this.setState({ ending: false })
   }
 
   // In the mobile version, played, duration, and progress are all updated by
@@ -58,7 +62,8 @@ class ProgressBar extends TrackPlayer.ProgressComponent {
     const { played, duration, progress, topScreen, startSwitch } = this.props
 
     // if song ended, reset track progress and call the endSong function from index.js
-    if (Math.round(progress * 100) / 100 === 1) {
+    if (Math.round(progress * 100) / 100 === 1 && !this.state.ending) {
+      console.log('endingtrack')
       this.endTrack()
     }
 
@@ -109,7 +114,9 @@ class ProgressBar extends TrackPlayer.ProgressComponent {
     } = this.props
 
     // If track has changed, update the duration
-    if (propDuration != duration) updateDuration(duration)
+    if (propDuration != duration) {
+      updateDuration(duration)
+    }
     // Update the progress in index if it's changed
     if (propPlayed != played) {
       updateProgress(progress)
