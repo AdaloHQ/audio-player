@@ -12,12 +12,6 @@
       "type": "text"
     },
     {
-      "name": "autoplay",
-      "displayName": "Autoplay?",
-      "type": "boolean",
-      "default": false
-    },
-    {
       "name": "title",
       "displayName": "Song Title",
       "type": "text",
@@ -28,6 +22,18 @@
         "fontSize": "16",
         "color": "#424242"
       }
+    },
+    {
+      "name": "autoplay",
+      "displayName": "Autoplay?",
+      "type": "boolean",
+      "default": false
+    },
+    {
+      "name": "backgroundAudio",
+      "displayName": "Background Audio",
+      "type": "boolean",
+      "default": true
     },
     {
       "name": "subtitle",
@@ -41,6 +47,7 @@
         "color": "#424242"
       }
     },
+
     {
       "name": "endAction",
       "displayName": "Actions when song ends",
