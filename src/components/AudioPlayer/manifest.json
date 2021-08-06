@@ -24,18 +24,6 @@
       }
     },
     {
-      "name": "autoplay",
-      "displayName": "Autoplay?",
-      "type": "boolean",
-      "default": false
-    },
-    {
-      "name": "backgroundAudio",
-      "displayName": "Background Audio",
-      "type": "boolean",
-      "default": true
-    },
-    {
       "name": "subtitle",
       "displayName": "Subtitle (Artist Name, etc.)",
       "type": "text",
@@ -47,7 +35,18 @@
         "color": "#424242"
       }
     },
-
+    {
+      "name": "autoplay",
+      "displayName": "Autoplay",
+      "type": "boolean",
+      "default": false
+    },
+    {
+      "name": "automaticPause",
+      "displayName": "Automatic Pausing",
+      "type": "boolean",
+      "default": false
+    },
     {
       "name": "endAction",
       "displayName": "Actions when song ends",

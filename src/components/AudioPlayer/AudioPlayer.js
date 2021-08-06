@@ -94,7 +94,7 @@ class AudioPlayerSub extends Component {
       prevProgress,
       duration,
       autoplay,
-      backgroundAudio,
+      automaticPause,
     } = this.props
 
     const id = await TrackPlayer.getCurrentTrack()
@@ -114,7 +114,7 @@ class AudioPlayerSub extends Component {
 
       await TrackPlayer.skip(id)
 
-      if (backgroundAudio) {
+      if (!automaticPause) {
         await TrackPlayer.pause()
         this.setState({ playing: false })
       }
@@ -173,7 +173,7 @@ class AudioPlayerSub extends Component {
     // when changing screens
     if (active && !nextProps.active) {
       // pause track if needed
-      if (playing && !nextProps.backgroundAudio) {
+      if (playing && nextProps.automaticPause) {
         TrackPlayer.pause()
         updatePlaying(false)
         this.setState({ startSwitch: true })

@@ -63,7 +63,6 @@ class ProgressBar extends TrackPlayer.ProgressComponent {
 
     // if song ended, reset track progress and call the endSong function from index.js
     if (Math.round(progress * 100) / 100 === 1 && !this.state.ending) {
-      console.log('endingtrack')
       this.endTrack()
     }
 
