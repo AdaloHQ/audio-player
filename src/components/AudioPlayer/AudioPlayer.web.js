@@ -44,6 +44,7 @@ export default class AudioPlayerSub extends Component {
       progress,
       updatePlaying,
       topScreen,
+      autoplay,
     } = this.props
     const {
       track: { url: prevUrl, title: prevTitle },
@@ -70,20 +71,32 @@ export default class AudioPlayerSub extends Component {
     }
 
     // Pauses audio when navigating to different screen
-    if (!topScreen && playing) {
+    if (prevProps.topScreen && !topScreen && playing) {
       this.player.pause()
       updatePlaying(false)
+    }
+
+    //play audio if set to autoplay
+    if (!prevProps.topScreen && topScreen && autoplay) {
+      this.player.play()
+      updatePlaying(true)
     }
   }
 
   addUrl = url => {
-    const { updatePlayable, updatePlaying, autoplay, editor } = this.props
+    const {
+      updatePlayable,
+      updatePlaying,
+      autoplay,
+      editor,
+      topScreen,
+    } = this.props
     updatePlayable(false)
     let testSound = new Audio(url)
     try {
       testSound.addEventListener('loadedmetadata', () => {
         this.player.src = url
-        if (autoplay && !editor) {
+        if (autoplay && !editor && topScreen) {
           updatePlaying(true)
           this.player.play()
         }
