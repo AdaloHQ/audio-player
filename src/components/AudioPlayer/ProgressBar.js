@@ -67,9 +67,9 @@ class ProgressBar extends TrackPlayer.ProgressComponent {
     }
 
     if (
-      nextProps.played != played ||
-      nextProps.duration != duration ||
-      nextProps.progress != progress ||
+      nextProps.played !== played ||
+      nextProps.duration !== duration ||
+      nextProps.progress !== progress ||
       !topScreen ||
       startSwitch
     ) {
@@ -113,11 +113,11 @@ class ProgressBar extends TrackPlayer.ProgressComponent {
     } = this.props
 
     // If track has changed, update the duration
-    if (propDuration != duration) {
+    if (propDuration !== duration) {
       updateDuration(duration)
     }
     // Update the progress in index if it's changed
-    if (propPlayed != played) {
+    if (propPlayed !== played) {
       updateProgress(progress)
       updatePlayed(played)
     }
@@ -238,7 +238,7 @@ function hhmmss(secs) {
   secs = secs % 60
   var hours = Math.floor(minutes / 60)
   minutes = minutes % 60
-  if (hours != 0) return `${hours}:${pad(minutes)}:${pad(secs)}`
+  if (hours !== 0) return `${hours}:${pad(minutes)}:${pad(secs)}`
   else return `${minutes}:${pad(secs)}`
 }
 
