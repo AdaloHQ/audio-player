@@ -114,6 +114,7 @@ class AudioPlayerSub extends Component {
 
       await TrackPlayer.skip(id)
 
+      // prevents previous screen's audio playing on new screens' audio player
       if (!automaticPause) {
         await TrackPlayer.pause()
         this.setState({ playing: false })
