@@ -178,7 +178,7 @@ class AudioPlayer extends Component {
       active,
       topScreen,
       // whether to pause when changing away from audio player screens
-      automaticPause,
+      backgroundAudio,
     } = this.props
     const { width } = this.state
     const artworkWidth = (width * artwork.artworkPercent) / 100
@@ -312,8 +312,10 @@ class AudioPlayer extends Component {
                 _fonts={_fonts}
                 active={active}
                 topScreen={topScreen}
-                automaticPause={
-                  typeof automaticPause !== 'undefined' ? automaticPause : false
+                backgroundAudio={
+                  typeof backgroundAudio !== 'undefined'
+                    ? backgroundAudio
+                    : true
                 }
               />
               <ControlScheme {...buttonConfig} {...this.state} />
@@ -356,8 +358,10 @@ class AudioPlayer extends Component {
                 _fonts={_fonts}
                 active={active}
                 topScreen={topScreen}
-                automaticPause={
-                  typeof automaticPause !== 'undefined' ? automaticPause : false
+                backgroundAudio={
+                  typeof backgroundAudio !== 'undefined'
+                    ? backgroundAudio
+                    : true
                 }
               />
               {title != '' ? (
@@ -413,8 +417,10 @@ class AudioPlayer extends Component {
                 _fonts={_fonts}
                 active={active}
                 topScreen={topScreen}
-                automaticPause={
-                  typeof automaticPause !== 'undefined' ? automaticPause : false
+                backgroundAudio={
+                  typeof backgroundAudio !== 'undefined'
+                    ? backgroundAudio
+                    : true
                 }
               />
             </View>

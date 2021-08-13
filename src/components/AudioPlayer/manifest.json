@@ -42,10 +42,11 @@
       "default": false
     },
     {
-      "name": "automaticPause",
-      "displayName": "Automatic Pausing",
+      "name": "backgroundAudio",
+      "displayName": "Continue playing on other screens",
       "type": "boolean",
-      "default": false
+      "helpText": "While playing audio outside of the app always works, this change only applies to Native.",
+      "default": true
     },
     {
       "name": "endAction",
