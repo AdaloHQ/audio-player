@@ -42,10 +42,10 @@
       "default": false
     },
     {
-      "name": "backgroundAudio",
+      "name": "keepPlaying",
       "displayName": "Continue playing on other screens",
       "type": "boolean",
-      "helpText": "While playing audio outside of the app always works, this change only applies to Native.",
+      "helpText": "Only applies to native iOS and Android apps.",
       "default": true
     },
     {
