@@ -5,9 +5,13 @@ import MultiSlider from '@ptomasroos/react-native-multi-slider'
 
 // Based off of the web version, with a few major differences
 class ProgressBar extends TrackPlayer.ProgressComponent {
-  state = {
-    seeking: false,
-    seekingValue: 0,
+  constructor(props) {
+    super(props)
+    this.state = {
+      seeking: false,
+      seekingValue: 0,
+      ending: false,
+    }
   }
 
   // When the user clicks and holds on the slider
@@ -37,21 +41,40 @@ class ProgressBar extends TrackPlayer.ProgressComponent {
     TrackPlayer.seekTo(seekValueSec)
   }
 
+  // resets progress to zero and calls on the action for the end of a song
+  endTrack = async () => {
+    const { updatePlayed, updateProgress, topScreen, endSong } = this.props
+    this.setState({ ending: true })
+
+    updateProgress(0)
+    updatePlayed(0)
+    await TrackPlayer.seekTo(0)
+    if (topScreen) endSong()
+
+    this.setState({ ending: false })
+  }
+
   // In the mobile version, played, duration, and progress are all updated by
-  // the progress bar, not the AudioPlayerSub, so if there are differences
+  // the render function in ProgressBar, not the AudioPlayerSub, so if there are differences
   // between the new props and the old props, don't rerender.
   // Prevents an infinite loop.
   shouldComponentUpdate(nextProps) {
-    //played, duration, progress
-    const { played, duration, progress, endSong } = this.props
-    // Check if the song has ended, and if so call the endSong function from index
-    if (Math.round(progress * 100) / 100 === 1) endSong()
+    const { played, duration, progress, topScreen, startSwitch } = this.props
+
+    // if song ended, reset track progress and call the endSong function from index.js
+    if (Math.round(progress * 100) / 100 === 1 && !this.state.ending) {
+      this.endTrack()
+    }
+
     if (
-      nextProps.played != played ||
-      nextProps.duration != duration ||
-      nextProps.progress != progress
-    )
+      nextProps.played !== played ||
+      nextProps.duration !== duration ||
+      nextProps.progress !== progress ||
+      !topScreen ||
+      startSwitch
+    ) {
       return false
+    }
     return true
   }
 
@@ -71,16 +94,16 @@ class ProgressBar extends TrackPlayer.ProgressComponent {
       width,
       _fonts,
     } = this.props
+
     let {
       position: played,
       duration,
       seekingValue,
       recentlySeeked,
     } = this.state
+
     let progress = this.getProgress()
-    if (!duration) duration = 0
-    if (!played) played = 0
-    if (!progress) progress = 0
+
     const {
       updateDuration,
       updateProgress,
@@ -88,13 +111,17 @@ class ProgressBar extends TrackPlayer.ProgressComponent {
       duration: propDuration,
       played: propPlayed,
     } = this.props
+
     // If track has changed, update the duration
-    if (propDuration != duration) updateDuration(duration)
+    if (propDuration !== duration) {
+      updateDuration(duration)
+    }
     // Update the progress in index if it's changed
-    if (propPlayed != played) {
+    if (propPlayed !== played) {
       updateProgress(progress)
       updatePlayed(played)
     }
+
     // Boolean flag used to test if the player's position has properly changed
     // after a seek has happened. This is used to keep the slider from awkwardly
     // jumping back to its previous value for a brief moment
@@ -103,8 +130,9 @@ class ProgressBar extends TrackPlayer.ProgressComponent {
     const playerUpdatedAfterSeek =
       Math.abs(played - seekingValue * duration) < 3 && recentlySeeked
     if (playerUpdatedAfterSeek) this.setState({ recentlySeeked: false })
+
     // Number used to keep the duration from changing awkwardly
-    // representes the played value using the seeked value, if the user has
+    // represents the played value using the seeked value, if the user has
     // recently seeked and the progress has not updated.
     // Logic "(this.state.seeking || !playerUpdatedAfterSeek) && recentlySeeked"
     // is used several times throughout the next few lines.
@@ -115,16 +143,18 @@ class ProgressBar extends TrackPlayer.ProgressComponent {
       (this.state.seeking || !playerUpdatedAfterSeek) && recentlySeeked
         ? seekingValue * duration
         : played
+
     // Formats duration and played using "hhmmss", padding the numbers and
     // presenting it as a string.
     let durationFormatted = hhmmss(
-      endTimeFormat == 1 ? duration : duration - playedIfSeeked
+      endTimeFormat === 1 ? duration : duration - playedIfSeeked
     )
-    if (durationFormatted == '-1:-1:-1') durationFormatted = '0:00'
+    if (durationFormatted === '-1:-1:-1') durationFormatted = '0:00'
     const playedFormatted =
       (this.state.seeking || !playerUpdatedAfterSeek) && recentlySeeked
         ? hhmmss(this.state.seekingValue * duration)
         : hhmmss(played)
+
     // The value that shows up in the slider
     const sliderValue =
       (this.state.seeking || !playerUpdatedAfterSeek) && recentlySeeked
@@ -146,6 +176,7 @@ class ProgressBar extends TrackPlayer.ProgressComponent {
       markerStyle.borderWidth = borderSize
       markerStyle.borderColor = borderColor
     }
+
     // Sets shadow size relative to the size of the marker.
     // 3 is completely arbitrary
     if (borderShadow) {
@@ -157,7 +188,6 @@ class ProgressBar extends TrackPlayer.ProgressComponent {
     const timeFontStyles = {
       fontFamily: _fonts.body,
     }
-
     return (
       <View style={(styles.wrapper, paddingStyles)}>
         {width !== null && (
@@ -208,7 +238,7 @@ function hhmmss(secs) {
   secs = secs % 60
   var hours = Math.floor(minutes / 60)
   minutes = minutes % 60
-  if (hours != 0) return `${hours}:${pad(minutes)}:${pad(secs)}`
+  if (hours !== 0) return `${hours}:${pad(minutes)}:${pad(secs)}`
   else return `${minutes}:${pad(secs)}`
 }
 

@@ -12,12 +12,6 @@
       "type": "text"
     },
     {
-      "name": "autoplay",
-      "displayName": "Autoplay?",
-      "type": "boolean",
-      "default": false
-    },
-    {
       "name": "title",
       "displayName": "Song Title",
       "type": "text",
@@ -40,6 +34,19 @@
         "fontSize": "12",
         "color": "#424242"
       }
+    },
+    {
+      "name": "autoplay",
+      "displayName": "Autoplay",
+      "type": "boolean",
+      "default": false
+    },
+    {
+      "name": "keepPlaying",
+      "displayName": "Continue playing on other screens",
+      "type": "boolean",
+      "helpText": "Only applies to native iOS and Android apps.",
+      "default": true
     },
     {
       "name": "endAction",

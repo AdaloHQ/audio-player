@@ -39,34 +39,64 @@ export default class AudioPlayerSub extends Component {
 
   componentDidUpdate(prevProps) {
     const {
-      track: { url },
+      track: { url, title: title },
       playing,
       progress,
-      endSong,
+      updatePlaying,
+      topScreen,
+      autoplay,
     } = this.props
     const {
-      track: { url: prevUrl },
+      track: { url: prevUrl, title: prevTitle },
       playing: prevPlaying,
     } = prevProps
+
     if (url !== prevUrl) {
       this.addUrl(url)
     }
+
     if (playing !== prevPlaying) {
       if (playing && this.player.src) this.player.play()
       else if (!playing && this.player.src) this.player.pause()
     }
-    // Check if the song has ended, and if so call the endSong function from index
-    if (Math.round(progress * 100) / 100 === 1) endSong()
+
+    // If song has ended, reset progress and trigger end action
+    if (topScreen && Math.round(progress * 10000) / 10000 === 1) {
+      const { updatePlayed, updateProgress, endSong } = this.props
+      this.player.currentTime = 0
+      updatePlayed(0)
+      updateProgress(0)
+
+      endSong()
+    }
+
+    // Pauses audio when navigating to different screen
+    if (prevProps.topScreen && !topScreen && playing) {
+      this.player.pause()
+      updatePlaying(false)
+    }
+
+    //play audio if set to autoplay
+    if (!prevProps.topScreen && topScreen && autoplay) {
+      this.player.play()
+      updatePlaying(true)
+    }
   }
 
   addUrl = url => {
-    const { updatePlayable, updatePlaying, autoplay, editor } = this.props
+    const {
+      updatePlayable,
+      updatePlaying,
+      autoplay,
+      editor,
+      topScreen,
+    } = this.props
     updatePlayable(false)
     let testSound = new Audio(url)
     try {
       testSound.addEventListener('loadedmetadata', () => {
         this.player.src = url
-        if (autoplay && !editor) {
+        if (autoplay && !editor && topScreen) {
           updatePlaying(true)
           this.player.play()
         }
@@ -126,8 +156,9 @@ export default class AudioPlayerSub extends Component {
     } = this.props
     // Formats duration and played using "hhmmss", padding the numbers and
     // presenting it as a string.
+
     const durationFormatted = hhmmss(
-      endTimeFormat == 1 ? duration : duration - played
+      endTimeFormat === 1 ? duration : duration - played
     )
     const playedFormatted = this.state.seeking
       ? hhmmss(this.state.seekingValue * duration)
@@ -162,6 +193,7 @@ export default class AudioPlayerSub extends Component {
     const timeFontStyles = {
       fontFamily: _fonts.body,
     }
+
     return (
       <View style={(styles.wrapper, paddingStyles)}>
         <audio ref={ref => (this.player = ref)} />

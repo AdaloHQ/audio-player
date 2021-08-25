@@ -18,6 +18,8 @@ class AudioPlayer extends Component {
       playable: true,
       // Proportion of song played (from 0 to 1)
       progress: 0,
+      // Proportion of previous song played (0 if no previous song)
+      prevProgress: 0,
       // Duration of song
       duration: 0,
       // Time played of song (in seconds)
@@ -142,13 +144,16 @@ class AudioPlayer extends Component {
   updatePlayable = bool => {
     this.setState({ playable: bool })
   }
+  updatePrevProgress = newProgress => {
+    this.setState({ prevProgress: newProgress })
+  }
 
   endSong = () => {
     const { endAction } = this.props
     if (endAction) endAction()
   }
 
-  // Delcares ref to audio player component. Enables index to do playback
+  // Declares ref to audio player component. Enables index.js to do playback
   // control on the audio player subcomponent
   ref = audioPlayer => {
     this.audioPlayer = audioPlayer
@@ -170,6 +175,10 @@ class AudioPlayer extends Component {
       autoplay,
       editor,
       _fonts,
+      active,
+      topScreen,
+      // whether to pause when changing away from audio player screens
+      keepPlaying,
     } = this.props
     const { width } = this.state
     const artworkWidth = (width * artwork.artworkPercent) / 100
@@ -262,7 +271,7 @@ class AudioPlayer extends Component {
     const showArtwork = artwork.showArtwork && artwork.enabled
     // A little redundant, but various if statements control for positioning
     // options chosen by customer.
-    if (progressBar.position == 'aboveButtons') {
+    if (progressBar.position === 'aboveButtons') {
       return (
         <View onLayout={this.handleLayout}>
           {width !== null && (
@@ -285,6 +294,7 @@ class AudioPlayer extends Component {
                 played={this.state.played}
                 duration={this.state.duration}
                 progress={this.state.progress}
+                prevProgress={this.state.prevProgress}
                 playing={this.state.playing}
                 track={this.state.track}
                 seek={this.seek}
@@ -294,18 +304,24 @@ class AudioPlayer extends Component {
                 updatePlayed={this.updatePlayed}
                 updatePlaying={this.updatePlaying}
                 updatePlayable={this.updatePlayable}
+                updatePrevProgress={this.updatePrevProgress}
                 width={width}
                 autoplay={autoplay}
                 editor={editor}
                 endSong={this.endSong}
                 _fonts={_fonts}
+                active={active}
+                topScreen={topScreen}
+                keepPlaying={
+                  typeof keepPlaying !== 'undefined' ? keepPlaying : true
+                }
               />
               <ControlScheme {...buttonConfig} {...this.state} />
             </View>
           )}
         </View>
       )
-    } else if (progressBar.position == 'aboveTitle') {
+    } else if (progressBar.position === 'aboveTitle') {
       return (
         <View onLayout={this.handleLayout}>
           {width !== null && (
@@ -322,6 +338,7 @@ class AudioPlayer extends Component {
                 played={this.state.played}
                 duration={this.state.duration}
                 progress={this.state.progress}
+                prevProgress={this.state.prevProgress}
                 playing={this.state.playing}
                 track={this.state.track}
                 seek={this.seek}
@@ -331,11 +348,17 @@ class AudioPlayer extends Component {
                 updatePlayed={this.updatePlayed}
                 updatePlaying={this.updatePlaying}
                 updatePlayable={this.updatePlayable}
+                updatePrevProgress={this.updatePrevProgress}
                 width={width}
                 autoplay={autoplay}
                 editor={editor}
                 endSong={this.endSong}
                 _fonts={_fonts}
+                active={active}
+                topScreen={topScreen}
+                keepPlaying={
+                  typeof keepPlaying !== 'undefined' ? keepPlaying : true
+                }
               />
               {title != '' ? (
                 <Text style={dynamicStyles.title}>{title}</Text>
@@ -372,6 +395,7 @@ class AudioPlayer extends Component {
                 played={this.state.played}
                 duration={this.state.duration}
                 progress={this.state.progress}
+                prevProgress={this.state.prevProgress}
                 playing={this.state.playing}
                 track={this.state.track}
                 seek={this.seek}
@@ -381,11 +405,17 @@ class AudioPlayer extends Component {
                 updatePlayed={this.updatePlayed}
                 updatePlaying={this.updatePlaying}
                 updatePlayable={this.updatePlayable}
+                updatePrevProgress={this.updatePrevProgress}
                 width={width}
                 autoplay={autoplay}
                 editor={editor}
                 endSong={this.endSong}
                 _fonts={_fonts}
+                active={active}
+                topScreen={topScreen}
+                keepPlaying={
+                  typeof keepPlaying !== 'undefined' ? keepPlaying : true
+                }
               />
             </View>
           )}
