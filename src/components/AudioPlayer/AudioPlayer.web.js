@@ -150,6 +150,7 @@ export default class AudioPlayerSub extends Component {
       borderSize,
       borderShadow,
       endTimeFormat,
+      timeFontColor,
       markerColor,
       width,
       _fonts,
@@ -192,6 +193,7 @@ export default class AudioPlayerSub extends Component {
     const trackLength = width - padding * 2
     const timeFontStyles = {
       fontFamily: _fonts.body,
+      color: timeFontColor,
     }
 
     return (

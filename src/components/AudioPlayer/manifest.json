@@ -225,6 +225,12 @@
               }
             ]
           }
+        },
+        {
+          "name": "timeFontColor",
+          "displayName": "Time Text Color",
+          "type": "color",
+          "default": "@text"
         }
       ]
     },

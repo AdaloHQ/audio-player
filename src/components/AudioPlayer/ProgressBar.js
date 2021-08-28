@@ -90,6 +90,7 @@ class ProgressBar extends TrackPlayer.ProgressComponent {
       borderSize,
       borderShadow,
       endTimeFormat,
+      timeFontColor,
       markerColor,
       width,
       _fonts,
@@ -187,6 +188,7 @@ class ProgressBar extends TrackPlayer.ProgressComponent {
     const trackLength = width - padding * 2
     const timeFontStyles = {
       fontFamily: _fonts.body,
+      color: timeFontColor,
     }
     return (
       <View style={(styles.wrapper, paddingStyles)}>
