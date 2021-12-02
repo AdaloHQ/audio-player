@@ -35,6 +35,13 @@ class AudioPlayerSub extends Component {
 
     const { track, playing, autoplay, updatePlaying } = this.props
 
+    if (
+      (await TrackPlayer.getState()) === TrackPlayer.STATE_PAUSED &&
+      autoplay
+    ) {
+      await TrackPlayer.reset()
+    }
+
     // Adds the specified song to the track player to be ready to play
     const id = uuid()
     await TrackPlayer.add({
