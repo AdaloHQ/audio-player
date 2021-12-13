@@ -68,6 +68,8 @@ class AudioPlayerSub extends Component {
     let state = await TrackPlayer.getState()
     if (state === TrackPlayer.STATE_PLAYING && !playing) {
       updatePlaying(true)
+    } else if (state === TrackPlayer.STATE_PAUSED && playing) {
+      updatePlaying(false)
     }
 
     // clean out unnecessary tracks in TrackPlayer queue
@@ -159,6 +161,8 @@ class AudioPlayerSub extends Component {
     let playerState = await TrackPlayer.getState()
     if (playerState === TrackPlayer.STATE_PLAYING && !playing) {
       updatePlaying(true)
+    } else if(playerState === TrackPlayer.STATE_PAUSED && playing) {
+      updatePlaying(false)
     }
 
     // clean out unnecessary tracks in TrackPlayer queue
@@ -201,6 +205,7 @@ class AudioPlayerSub extends Component {
     // Update play/pause if it changed
     if (prevProps.playing !== playing) {
       playing ? TrackPlayer.play() : TrackPlayer.pause()
+
     }
   }
 
