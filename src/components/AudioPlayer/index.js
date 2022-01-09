@@ -74,6 +74,9 @@ export function AudioPlayer(props) {
       (nativeEvent && nativeEvent.layout) || {}
     if (currentWidth !== width) {
       setWidth(currentWidth)
+    }
+
+    if (currentHeight !== height) {
       setHeight(currentHeight)
     }
   }
@@ -281,7 +284,7 @@ export function AudioPlayer(props) {
       updatePlaying={updatePlaying}
       updatePlayable={updatePlayable}
       updatePrevProgress={updatePrevProgress}
-      width={compactUI ? width - height : width}
+      width={compactUI && showArtwork ? width - height : width}
       autoplay={autoplay}
       editor={editor}
       endSong={endSong}
