@@ -52,6 +52,12 @@
       "name": "endAction",
       "displayName": "Actions when song ends",
       "type": "action"
+    },
+    {
+      "name": "compactUI",
+      "displayName": "Display in compact design",
+      "type": "boolean",
+      "default": false
     }
   ],
   "childComponents": [

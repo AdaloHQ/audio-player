@@ -12,7 +12,7 @@ const placeholderAlbumArt =
 
 export function AudioPlayer(props) {
   const ref = useRef(null)
-  const { url, title, subtitle, artwork } = props
+  const { url, title, subtitle, artwork, compactUI } = props
   // Controls play/pause buttons, as well as playback
   const [playing, setPlaying] = useState(false)
   // Validity of url being played
@@ -37,6 +37,7 @@ export function AudioPlayer(props) {
   })
 
   const [width, setWidth] = useState(null)
+  const [height, setHeight] = useState(null)
 
   const state = {
     playing,
@@ -69,9 +70,11 @@ export function AudioPlayer(props) {
 
   // Taken from range-slider code Jeremy wrote to dynamically change width
   const handleLayout = ({ nativeEvent }) => {
-    const { width: currentWidth } = (nativeEvent && nativeEvent.layout) || {}
+    const { width: currentWidth, height: currentHeight } =
+      (nativeEvent && nativeEvent.layout) || {}
     if (currentWidth !== width) {
       setWidth(currentWidth)
+      setHeight(currentHeight)
     }
   }
 
@@ -167,13 +170,16 @@ export function AudioPlayer(props) {
     if (endAction) endAction()
   }
 
-  const artworkWidth = (width * artwork.artworkPercent) / 100
+  const artworkWidth = compactUI
+    ? height
+    : (width * artwork.artworkPercent) / 100
+  const artWorkHeight = compactUI ? height : artworkWidth
 
   // noinspection JSSuspiciousNameCombination
   const dynamicStyles = {
     artwork: {
       width: artworkWidth,
-      height: artworkWidth,
+      height: artWorkHeight,
       borderRadius: artwork.artworkRounding,
       alignSelf: 'center',
     },
@@ -275,7 +281,7 @@ export function AudioPlayer(props) {
       updatePlaying={updatePlaying}
       updatePlayable={updatePlayable}
       updatePrevProgress={updatePrevProgress}
-      width={width}
+      width={compactUI ? width - height : width}
       autoplay={autoplay}
       editor={editor}
       endSong={endSong}
@@ -295,6 +301,43 @@ export function AudioPlayer(props) {
       ) : null}
     </>
   )
+
+  if (compactUI) {
+    return (
+      <View onLayout={handleLayout}>
+        <View style={styles.wrapperCompact}>
+          {showArtwork && (
+            <Image
+              source={{ uri: artwork.artworkURL }}
+              style={dynamicStyles.artwork}
+              defaultSource={placeholderAlbumArt}
+            />
+          )}
+          <View style={styles.controls}>
+            {progressBar.position === 'aboveButtons' ? (
+              <>
+                {SongText}
+                {AudioPlayerComponent}
+                {ControlSchemeComponent}
+              </>
+            ) : progressBar.position === 'aboveTitle' ? (
+              <>
+                {AudioPlayerComponent}
+                {SongText}
+                {ControlSchemeComponent}
+              </>
+            ) : (
+              <>
+                {SongText}
+                {ControlSchemeComponent}
+                {AudioPlayerComponent}
+              </>
+            )}
+          </View>
+        </View>
+      </View>
+    )
+  }
   return (
     <View onLayout={handleLayout}>
       <View style={styles.wrapper}>
@@ -336,4 +379,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  wrapperCompact: {
+    flexDirection: 'row',
+  },
+  controls: { flex: 1 },
 })
