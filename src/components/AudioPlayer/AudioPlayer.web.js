@@ -68,6 +68,7 @@ export default class AudioPlayerSub extends Component {
       updateProgress(0)
 
       endSong()
+      updatePlaying(false)
     }
 
     // Pauses audio when navigating to different screen
