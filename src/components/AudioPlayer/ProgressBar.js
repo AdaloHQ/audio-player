@@ -11,6 +11,7 @@ class ProgressBar extends TrackPlayer.ProgressComponent {
       seeking: false,
       seekingValue: 0,
       ending: false,
+      endActionRan: false,
     }
   }
 
@@ -44,7 +45,7 @@ class ProgressBar extends TrackPlayer.ProgressComponent {
   // resets progress to zero and calls on the action for the end of a song
   endTrack = async () => {
     const { updatePlayed, updateProgress, topScreen, endSong } = this.props
-    this.setState({ ending: true })
+    this.setState({ ending: true, endActionRan: true })
 
     updateProgress(0)
     updatePlayed(0)
@@ -58,11 +59,14 @@ class ProgressBar extends TrackPlayer.ProgressComponent {
   // the render function in ProgressBar, not the AudioPlayerSub, so if there are differences
   // between the new props and the old props, don't rerender.
   // Prevents an infinite loop.
-  shouldComponentUpdate(nextProps) {
+  shouldComponentUpdate(nextProps, nextState) {
     const { played, duration, progress, topScreen, startSwitch } = this.props
 
-    // if song ended, reset track progress and call the endSong function from index.js
-    if (Math.round(progress * 100) / 100 === 1 && !this.state.ending) {
+    if (
+      Math.floor(progress * 100) / 100 === 1 &&
+      !this.state.ending &&
+      !nextState.endActionRan
+    ) {
       this.endTrack()
     }
 
