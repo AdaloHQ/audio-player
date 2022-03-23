@@ -65,6 +65,7 @@ class ProgressBar extends TrackPlayer.ProgressComponent {
     if (
       Math.floor(progress * 100) / 100 === 1 &&
       !this.state.ending &&
+      !this.state.endActionRan &&
       !nextState.endActionRan
     ) {
       this.endTrack()
@@ -124,6 +125,9 @@ class ProgressBar extends TrackPlayer.ProgressComponent {
     if (propPlayed !== played) {
       updateProgress(progress)
       updatePlayed(played)
+      if (progress < 1 && this.state.endActionRan) {
+        this.setState({ endActionRan: false })
+      }
     }
 
     // Boolean flag used to test if the player's position has properly changed
