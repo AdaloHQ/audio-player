@@ -15,6 +15,8 @@ class AudioPlayerSub extends Component {
   setup = async () => {
     await TrackPlayer.setupPlayer()
 
+    console.log('TrackPlayer:', TrackPlayer)
+
     TrackPlayer.registerPlaybackService(() => require('./service'))
 
     TrackPlayer.updateOptions({
@@ -44,13 +46,17 @@ class AudioPlayerSub extends Component {
 
     // Adds the specified song to the track player to be ready to play
     const id = uuid()
-    await TrackPlayer.add({
-      id,
-      url: track.url,
-      title: track.title,
-      artist: track.subtitle,
-      artwork: track.artwork,
-    })
+
+    await TrackPlayer.add(
+      {
+        id,
+        url: track.url,
+        title: track.title,
+        artist: track.subtitle,
+        artwork: track.artwork,
+      },
+      0
+    )
 
     // only play when track is ready
     let isReady = (await TrackPlayer.getState()) === TrackPlayer.STATE_READY
@@ -75,7 +81,7 @@ class AudioPlayerSub extends Component {
     // clean out unnecessary tracks in TrackPlayer queue
     await TrackPlayer.getQueue().then(queue => {
       if (queue.length > 1) {
-        TrackPlayer.remove(queue[0].id)
+        TrackPlayer.remove(0)
       }
     })
   }
@@ -106,22 +112,24 @@ class AudioPlayerSub extends Component {
       keepPlaying,
     } = this.props
 
-    const id = await TrackPlayer.getCurrentTrack()
-    const oldTrack = await TrackPlayer.getTrack(id)
+    const oldTrack = await TrackPlayer.getTrack(0)
 
     if (topScreen && !this.state.switching && oldTrack?.url !== track.url) {
       this.setState({ switching: true })
 
       const id = uuid()
-      await TrackPlayer.add({
-        id,
-        url: track.url,
-        title: track.title,
-        artist: track.subtitle,
-        artwork: track.artwork,
-      })
+      await TrackPlayer.add(
+        {
+          id,
+          url: track.url,
+          title: track.title,
+          artist: track.subtitle,
+          artwork: track.artwork,
+        },
+        0
+      )
 
-      await TrackPlayer.skip(id)
+      await TrackPlayer.skip(0)
 
       // prevents previous screen's audio playing on new screens' audio player
       if (keepPlaying) {
@@ -161,14 +169,14 @@ class AudioPlayerSub extends Component {
     let playerState = await TrackPlayer.getState()
     if (playerState === TrackPlayer.STATE_PLAYING && !playing) {
       updatePlaying(true)
-    } else if(playerState === TrackPlayer.STATE_PAUSED && playing) {
+    } else if (playerState === TrackPlayer.STATE_PAUSED && playing) {
       updatePlaying(false)
     }
 
     // clean out unnecessary tracks in TrackPlayer queue
     await TrackPlayer.getQueue().then(queue => {
       if (queue.length > 1) {
-        TrackPlayer.remove(queue[0].id)
+        TrackPlayer.remove(0)
       }
     })
   }
@@ -205,7 +213,6 @@ class AudioPlayerSub extends Component {
     // Update play/pause if it changed
     if (prevProps.playing !== playing) {
       playing ? TrackPlayer.play() : TrackPlayer.pause()
-
     }
   }
 
