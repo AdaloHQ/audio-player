@@ -10,17 +10,22 @@ const ProgressBar = props => {
   const [ending, setEnding] = useState(false)
   const [recentlySeeked, setRecentlySeeked] = useState(false)
 
+    // When the user clicks and holds on the slider
+
   const startSeek = () => {
     setSeeking(true)
     setSeekingValue(position)
   }
-
+  // When the user changes the value but hasn't let go of the slider yet
   const seek = values => {
     setSeekingValue(values[0])
-  }
-
+  }  
+  // User has let go of the slider
   const endSeek = () => {
     setSeeking(false)
+    // Recently seeked is for logic concerning the value of the slider.
+    // Used to address issue where the slider would randomly jump back to
+    // where it was before the user seeked for a brief moment in time.
     setRecentlySeeked(true)
     const { updateProgress, updatePlayed } = props
     let seekValueSec = seekingValue * duration
@@ -29,6 +34,7 @@ const ProgressBar = props => {
     TrackPlayer.seekTo(seekValueSec)
   }
 
+  // resets progress to zero and calls on the action for the end of a song
   const endTrack = async () => {
     const {
       updatePlayed,
@@ -73,24 +79,41 @@ const ProgressBar = props => {
     played: propPlayed,
   } = props
 
+  // If track has changed, update the duration
   if (propDuration !== duration) {
     updateDuration(duration)
   }
 
+  // Update the progress in index if it's changed
   if (propPlayed !== position) {
     updateProgress(progress)
     updatePlayed(position)
   }
 
+  // Boolean flag used to test if the player's position has properly changed
+  // after a seek has happened. This is used to keep the slider from awkwardly
+  // jumping back to its previous value for a brief moment
+  // Logic: if recently seeked and the current played value is within a few
+  // seconds of the seeked value, then the player has properly updated
   const playerUpdatedAfterSeek =
     Math.abs(position - seekingValue * duration) < 3 && recentlySeeked
   if (playerUpdatedAfterSeek) setRecentlySeeked(false)
 
+  // Number used to keep the duration from changing awkwardly
+  // represents the played value using the seeked value, if the user has
+  // recently seeked and the progress has not updated.
+  // Logic "(this.state.seeking || !playerUpdatedAfterSeek) && recentlySeeked"
+  // is used several times throughout the next few lines.
+  // The "&& recentlySeeked" is used to allow the player to properly update
+  // if the user has skipped or rewinded using buttons, because that logic
+  // is housed in index, not here.
   const playedIfSeeked =
     (seeking || !playerUpdatedAfterSeek) && recentlySeeked
       ? seekingValue * duration
       : position
 
+  // Formats duration and played using "hhmmss", padding the numbers and
+  // presenting it as a string.
   let durationFormatted = hhmmss(
     endTimeFormat === 1 ? duration : duration - playedIfSeeked
   )
@@ -100,6 +123,7 @@ const ProgressBar = props => {
       ? hhmmss(seekingValue * duration)
       : hhmmss(position)
 
+  // The value that shows up in the slider
   const sliderValue =
     (seeking || !playerUpdatedAfterSeek) && recentlySeeked
       ? seekingValue
@@ -112,6 +136,7 @@ const ProgressBar = props => {
       width: 0,
       height: 0,
     },
+    //Makes sure the marker is properly centered on the slider
     marginTop: height - 2,
     borderWidth: 0,
     backgroundColor: markerColor,
@@ -121,6 +146,8 @@ const ProgressBar = props => {
     markerStyle.borderColor = borderColor
   }
 
+  // Sets shadow size relative to the size of the marker.
+  // 3 is completely arbitrary
   if (borderShadow) {
     markerStyle.shadowOffset.height = markerSize / 3
   }
@@ -131,6 +158,7 @@ const ProgressBar = props => {
     fontFamily: _fonts.body,
   }
 
+  // if song ended, reset track progress and call the endSong function from index.js
   if (Math.round(progress * 100) / 100 === 1 && !ending) {
     endTrack()
   }
