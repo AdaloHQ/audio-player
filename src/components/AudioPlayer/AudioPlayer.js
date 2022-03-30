@@ -210,6 +210,15 @@ class AudioPlayerSub extends Component {
     }
   }
 
+  updatePlaying(playing) {
+    console.log('update playing')
+    if (playing) {
+      TrackPlayer.play()
+    } else {
+      TrackPlayer.pause()
+    }
+  }
+
   // Render Progress Bar
   render() {
     return (
@@ -217,6 +226,7 @@ class AudioPlayerSub extends Component {
         {...this.props}
         switching={this.state.switching}
         startSwitch={this.state.startSwitch}
+        updatePlaying={this.updatePlaying}
       />
     )
   }

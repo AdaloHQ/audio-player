@@ -3,372 +3,176 @@ import { Text, View, StyleSheet } from 'react-native'
 import TrackPlayer, { useProgress } from 'react-native-track-player'
 import MultiSlider from '@ptomasroos/react-native-multi-slider'
 
-//TODO: do some math to calculate 'progress' that was in the old render function
-const ProgressBar = React.memo(
-  props => {
-    const { position, buffered, duration } = useProgress()
-    const [seeking, setSeeking] = useState(false)
-    const [seekingValue, setSeekingValue] = useState(0)
-    const [ending, setEnding] = useState(false)
-    const [recentlySeeked, setRecentlySeeked] = useState(false)
+const ProgressBar = props => {
+  const { position, duration } = useProgress()
+  const [seeking, setSeeking] = useState(false)
+  const [seekingValue, setSeekingValue] = useState(0)
+  const [ending, setEnding] = useState(false)
+  const [recentlySeeked, setRecentlySeeked] = useState(false)
 
-    const startSeek = () => {
-      // const { position } = useProgress()
-      setSeeking(true)
-      setSeekingValue(position)
-    }
-
-    const seek = values => {
-      setSeekingValue(values[0])
-    }
-
-    const endSeek = () => {
-      setSeeking(false)
-      setRecentlySeeked(true)
-      const { updateProgress, updatePlayed } = props
-      let seekValueSec = seekingValue * duration
-      updatePlayed(seekValueSec)
-      updateProgress(seekingValue)
-      TrackPlayer.seekTo(seekValueSec)
-    }
-
-    const endTrack = async () => {
-      const { updatePlayed, updateProgress, topScreen, endSong } = props
-      setEnding(true)
-
-      updateProgress(0)
-      updatePlayed(0)
-      await TrackPlayer.seekTo(0)
-      if (topScreen) endSong()
-
-      setEnding(false)
-    }
-
-    const {
-      filledColor,
-      height,
-      unfilledColor,
-      progressRounding,
-      markerSize,
-      border,
-      borderColor,
-      borderSize,
-      borderShadow,
-      endTimeFormat,
-      markerColor,
-      width,
-      _fonts,
-    } = props
-
-    console.log(
-      'current progress',
-      position / duration,
-      'position',
-      position,
-      'duration',
-      duration
-    )
-
-    let progress = isNaN(position / duration) ? 0 : position / duration
-
-    const {
-      updateDuration,
-      updateProgress,
-      updatePlayed,
-      duration: propDuration,
-      played: propPlayed,
-    } = props
-
-    if (propDuration !== duration) {
-      updateDuration(duration)
-    }
-
-    //TODO: look into this function futher
-    if (propPlayed !== position) {
-      updateProgress(progress)
-      updatePlayed(position)
-    }
-
-    const playerUpdatedAfterSeek =
-      Math.abs(position - seekingValue * duration) < 3 && recentlySeeked
-    if (playerUpdatedAfterSeek) setRecentlySeeked(false)
-
-    const playedIfSeeked =
-      (seeking || !playerUpdatedAfterSeek) && recentlySeeked
-        ? seekingValue * duration
-        : position
-
-    let durationFormatted = hhmmss(
-      endTimeFormat === 1 ? duration : duration - playedIfSeeked
-    )
-    if (durationFormatted === '-1:-1:-1') durationFormatted = '0:00'
-    const playedFormatted =
-      (seeking || !playerUpdatedAfterSeek) && recentlySeeked
-        ? hhmmss(seekingValue * duration)
-        : hhmmss(position)
-
-    const sliderValue =
-      (seeking || !playerUpdatedAfterSeek) && recentlySeeked
-        ? seekingValue
-        : progress //changed from progress in old version
-
-    const markerStyle = {
-      width: markerSize,
-      height: markerSize,
-      shadowOffset: {
-        width: 0,
-        height: 0,
-      },
-      marginTop: height - 2,
-      borderWidth: 0,
-      backgroundColor: markerColor,
-    }
-    if (border) {
-      markerStyle.borderWidth = borderSize
-      markerStyle.borderColor = borderColor
-    }
-
-    if (borderShadow) {
-      markerStyle.shadowOffset.height = markerSize / 3
-    }
-    const padding = Math.ceil(markerSize / 2)
-    const paddingStyles = { paddingLeft: padding, paddingRight: padding }
-    const trackLength = width - padding * 2
-    const timeFontStyles = {
-      fontFamily: _fonts.body,
-    }
-
-    return (
-      <View style={(styles.wrapper, paddingStyles)}>
-        {width !== null && (
-          <View>
-            <View style={styles.seekBar}>
-              <MultiSlider
-                enabledOne
-                min={0}
-                max={1}
-                values={[sliderValue]}
-                step={0.01}
-                sliderLength={trackLength}
-                enableLabel={false}
-                onValuesChangeStart={startSeek}
-                onValuesChange={seek}
-                onValuesChangeFinish={endSeek}
-                trackStyle={{
-                  backgroundColor: unfilledColor,
-                  height: height,
-                  borderRadius: progressRounding,
-                }}
-                selectedStyle={{
-                  backgroundColor: filledColor,
-                  height: height,
-                  borderRadius: progressRounding,
-                }}
-                markerStyle={markerStyle}
-              />
-            </View>
-            <View style={styles.timeText}>
-              <Text style={timeFontStyles}>{playedFormatted}</Text>
-              <Text style={timeFontStyles}>{durationFormatted}</Text>
-            </View>
-          </View>
-        )}
-      </View>
-    )
-  },
-  (prevProps, nextProps) => {
-    const { played, duration, progress, topScreen, startSwitch } = prevProps //TODO: should this be props or prevpropts?
-
-    if (Math.round(progress * 100) / 100 === 1 && !ending) {
-      endTrack()
-    }
-
-    if (
-      nextProps.played !== played ||
-      nextProps.duration !== duration ||
-      nextProps.progress !== progress ||
-      !topScreen ||
-      startSwitch
-    ) {
-      return false
-    }
-    return true
+  const startSeek = () => {
+    setSeeking(true)
+    setSeekingValue(position)
   }
-)
 
-// const ProgressBar = props => {
-//   const { position, buffered, duration } = useProgress()
-//   const [seeking, setSeeking] = useState(false)
-//   const [seekingValue, setSeekingValue] = useState(0)
-//   const [ending, setEnding] = useState(false)
-//   const [recentlySeeked, setRecentlySeeked] = useState(false)
+  const seek = values => {
+    setSeekingValue(values[0])
+  }
 
-//   const startSeek = () => {
-//     // const { position } = useProgress()
-//     setSeeking(true)
-//     setSeekingValue(position)
-//   }
+  const endSeek = () => {
+    setSeeking(false)
+    setRecentlySeeked(true)
+    const { updateProgress, updatePlayed } = props
+    let seekValueSec = seekingValue * duration
+    updatePlayed(seekValueSec)
+    updateProgress(seekingValue)
+    TrackPlayer.seekTo(seekValueSec)
+  }
 
-//   const seek = values => {
-//     setSeekingValue(values[0])
-//   }
+  const endTrack = async () => {
+    const {
+      updatePlayed,
+      updateProgress,
+      topScreen,
+      endSong,
+      updatePlaying,
+    } = props
+    setEnding(true)
 
-//   const endSeek = () => {
-//     setSeeking(false)
-//     setRecentlySeeked(true)
-//     const { updateProgress, updatePlayed } = props
-//     let seekValueSec = seekingValue * duration
-//     updatePlayed(seekValueSec)
-//     updateProgress(seekingValue)
-//     TrackPlayer.seekTo(seekValueSec)
-//   }
+    updatePlaying(false)
+    updateProgress(0)
+    updatePlayed(0)
+    await TrackPlayer.seekTo(0)
+    if (topScreen) endSong()
 
-//   const endTrack = async () => {
-//     const { updatePlayed, updateProgress, topScreen, endSong } = props
-//     setEnding(true)
+    setEnding(false)
+  }
 
-//     updateProgress(0)
-//     updatePlayed(0)
-//     await TrackPlayer.seekTo(0)
-//     if (topScreen) endSong()
+  const {
+    filledColor,
+    height,
+    unfilledColor,
+    progressRounding,
+    markerSize,
+    border,
+    borderColor,
+    borderSize,
+    borderShadow,
+    endTimeFormat,
+    markerColor,
+    width,
+    _fonts,
+  } = props
+  let progress = isNaN(position / duration) ? 0 : position / duration
 
-//     setEnding(false)
-//   }
+  const {
+    updateDuration,
+    updateProgress,
+    updatePlayed,
+    duration: propDuration,
+    played: propPlayed,
+  } = props
 
-//   const {
-//     filledColor,
-//     height,
-//     unfilledColor,
-//     progressRounding,
-//     markerSize,
-//     border,
-//     borderColor,
-//     borderSize,
-//     borderShadow,
-//     endTimeFormat,
-//     markerColor,
-//     width,
-//     _fonts,
-//   } = props
+  if (propDuration !== duration) {
+    updateDuration(duration)
+  }
 
-//   console.log(
-//     'current progress',
-//     position / duration,
-//     'position',
-//     position,
-//     'duration',
-//     duration
-//   )
+  if (propPlayed !== position) {
+    updateProgress(progress)
+    updatePlayed(position)
+  }
 
-//   let progress = position / duration
+  const playerUpdatedAfterSeek =
+    Math.abs(position - seekingValue * duration) < 3 && recentlySeeked
+  if (playerUpdatedAfterSeek) setRecentlySeeked(false)
 
-//   const {
-//     updateDuration,
-//     updateProgress,
-//     updatePlayed,
-//     duration: propDuration,
-//     played: propPlayed,
-//   } = props
+  const playedIfSeeked =
+    (seeking || !playerUpdatedAfterSeek) && recentlySeeked
+      ? seekingValue * duration
+      : position
 
-//   if (propDuration !== duration) {
-//     updateDuration(duration)
-//   }
+  let durationFormatted = hhmmss(
+    endTimeFormat === 1 ? duration : duration - playedIfSeeked
+  )
+  if (durationFormatted === '-1:-1:-1') durationFormatted = '0:00'
+  const playedFormatted =
+    (seeking || !playerUpdatedAfterSeek) && recentlySeeked
+      ? hhmmss(seekingValue * duration)
+      : hhmmss(position)
 
-//   //TODO: look into this function futher
-//   if (propPlayed !== position) {
-//     updateProgress(progress)
-//     updatePlayed(position)
-//   }
+  const sliderValue =
+    (seeking || !playerUpdatedAfterSeek) && recentlySeeked
+      ? seekingValue
+      : progress
 
-//   const playerUpdatedAfterSeek =
-//     Math.abs(position - seekingValue * duration) < 3 && recentlySeeked
-//   if (playerUpdatedAfterSeek) setRecentlySeeked(false)
+  const markerStyle = {
+    width: markerSize,
+    height: markerSize,
+    shadowOffset: {
+      width: 0,
+      height: 0,
+    },
+    marginTop: height - 2,
+    borderWidth: 0,
+    backgroundColor: markerColor,
+  }
+  if (border) {
+    markerStyle.borderWidth = borderSize
+    markerStyle.borderColor = borderColor
+  }
 
-//   const playedIfSeeked =
-//     (seeking || !playerUpdatedAfterSeek) && recentlySeeked
-//       ? seekingValue * duration
-//       : position
+  if (borderShadow) {
+    markerStyle.shadowOffset.height = markerSize / 3
+  }
+  const padding = Math.ceil(markerSize / 2)
+  const paddingStyles = { paddingLeft: padding, paddingRight: padding }
+  const trackLength = width - padding * 2
+  const timeFontStyles = {
+    fontFamily: _fonts.body,
+  }
 
-//   let durationFormatted = hhmmss(
-//     endTimeFormat === 1 ? duration : duration - playedIfSeeked
-//   )
-//   if (durationFormatted === '-1:-1:-1') durationFormatted = '0:00'
-//   const playedFormatted =
-//     (seeking || !playerUpdatedAfterSeek) && recentlySeeked
-//       ? hhmmss(seekingValue * duration)
-//       : hhmmss(position)
+  if (Math.round(progress * 100) / 100 === 1 && !ending) {
+    endTrack()
+  }
 
-//   const sliderValue =
-//     (seeking || !playerUpdatedAfterSeek) && recentlySeeked
-//       ? seekingValue
-//       : progress //changed from progress in old version
-
-//   const markerStyle = {
-//     width: markerSize,
-//     height: markerSize,
-//     shadowOffset: {
-//       width: 0,
-//       height: 0,
-//     },
-//     marginTop: height - 2,
-//     borderWidth: 0,
-//     backgroundColor: markerColor,
-//   }
-//   if (border) {
-//     markerStyle.borderWidth = borderSize
-//     markerStyle.borderColor = borderColor
-//   }
-
-//   if (borderShadow) {
-//     markerStyle.shadowOffset.height = markerSize / 3
-//   }
-//   const padding = Math.ceil(markerSize / 2)
-//   const paddingStyles = { paddingLeft: padding, paddingRight: padding }
-//   const trackLength = width - padding * 2
-//   const timeFontStyles = {
-//     fontFamily: _fonts.body,
-//   }
-
-//   //TODO: slider value is recalculating to equal time played
-//   console.log('slider value', sliderValue, 'tracklength', trackLength)
-//   return (
-//     <View style={(styles.wrapper, paddingStyles)}>
-//       {width !== null && (
-//         <View>
-//           <View style={styles.seekBar}>
-//             <MultiSlider
-//               enabledOne
-//               min={0}
-//               max={1}
-//               values={[sliderValue]}
-//               step={0.01}
-//               sliderLength={trackLength}
-//               enableLabel={false}
-//               onValuesChangeStart={startSeek}
-//               onValuesChange={seek}
-//               onValuesChangeFinish={endSeek}
-//               trackStyle={{
-//                 backgroundColor: unfilledColor,
-//                 height: height,
-//                 borderRadius: progressRounding,
-//               }}
-//               selectedStyle={{
-//                 backgroundColor: filledColor,
-//                 height: height,
-//                 borderRadius: progressRounding,
-//               }}
-//               markerStyle={markerStyle}
-//             />
-//           </View>
-//           <View style={styles.timeText}>
-//             <Text style={timeFontStyles}>{playedFormatted}</Text>
-//             <Text style={timeFontStyles}>{durationFormatted}</Text>
-//           </View>
-//         </View>
-//       )}
-//     </View>
-//   )
-// }
+  return (
+    <View style={(styles.wrapper, paddingStyles)}>
+      {width !== null && (
+        <View>
+          <View style={styles.seekBar}>
+            <MultiSlider
+              enabledOne
+              min={0}
+              max={1}
+              values={[sliderValue]}
+              step={0.01}
+              sliderLength={trackLength}
+              enableLabel={false}
+              onValuesChangeStart={startSeek}
+              onValuesChange={seek}
+              onValuesChangeFinish={endSeek}
+              trackStyle={{
+                backgroundColor: unfilledColor,
+                height: height,
+                borderRadius: progressRounding,
+              }}
+              selectedStyle={{
+                backgroundColor: filledColor,
+                height: height,
+                borderRadius: progressRounding,
+              }}
+              markerStyle={markerStyle}
+            />
+          </View>
+          <View style={styles.timeText}>
+            <Text style={timeFontStyles}>{playedFormatted}</Text>
+            <Text style={timeFontStyles}>{durationFormatted}</Text>
+          </View>
+        </View>
+      )}
+    </View>
+  )
+}
 
 // Taken from stackoverflow: https://stackoverflow.com/questions/31337370/how-to-convert-seconds-to-hhmmss-in-moment-js
 function pad(num) {
