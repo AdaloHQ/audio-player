@@ -3,6 +3,7 @@
 import TrackPlayer from 'react-native-track-player'
 
 // service.js
+//TODO: replace these with hooks
 module.exports = async function() {
   TrackPlayer.addEventListener('remote-play', () => TrackPlayer.play())
 

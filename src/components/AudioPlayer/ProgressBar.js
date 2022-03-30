@@ -1,84 +1,48 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Text, View, StyleSheet } from 'react-native'
-import TrackPlayer from 'react-native-track-player'
+import TrackPlayer, { useProgress } from 'react-native-track-player'
 import MultiSlider from '@ptomasroos/react-native-multi-slider'
 
-// Based off of the web version, with a few major differences
-class ProgressBar extends TrackPlayer.ProgressComponent {
-  constructor(props) {
-    super(props)
-    this.state = {
-      seeking: false,
-      seekingValue: 0,
-      ending: false,
-    }
-  }
+const ProgressBar = React.memo(
+  props => {
+    const { position, buffered, duration } = useProgress()
+    const [seeking, setSeeking] = useState(false)
+    const [seekingValue, setSeekingValue] = useState(0)
+    const [ending, setEnding] = useState(false)
+    const [recentlySeeked, setRecentlySeeked] = useState(false)
 
-  // When the user clicks and holds on the slider
-  startSeek = () => {
-    const { progress } = this.props
-    this.setState({ seeking: true, seekingValue: progress })
-  }
-  // When the user changes the value but hasn't let go of the slider yet
-  seek = values => {
-    this.setState({ seekingValue: values[0] })
-  }
-  // User has let go of the slider
-  endSeek = () => {
-    this.setState({
-      seeking: false,
-      progress: seekingValue,
-      // Recently seeked is for logic concerning the value of the slider.
-      // Used to address issue where the slider would randomly jump back to
-      // where it was before the user seeked for a brief moment in time.
-      recentlySeeked: true,
-    })
-    const { updateProgress, updatePlayed } = this.props
-    const { duration, seekingValue } = this.state
-    let seekValueSec = seekingValue * duration
-    updatePlayed(seekValueSec)
-    updateProgress(seekingValue)
-    TrackPlayer.seekTo(seekValueSec)
-  }
-
-  // resets progress to zero and calls on the action for the end of a song
-  endTrack = async () => {
-    const { updatePlayed, updateProgress, topScreen, endSong } = this.props
-    this.setState({ ending: true })
-
-    updateProgress(0)
-    updatePlayed(0)
-    await TrackPlayer.seekTo(0)
-    if (topScreen) endSong()
-
-    this.setState({ ending: false })
-  }
-
-  // In the mobile version, played, duration, and progress are all updated by
-  // the render function in ProgressBar, not the AudioPlayerSub, so if there are differences
-  // between the new props and the old props, don't rerender.
-  // Prevents an infinite loop.
-  shouldComponentUpdate(nextProps) {
-    const { played, duration, progress, topScreen, startSwitch } = this.props
-
-    // if song ended, reset track progress and call the endSong function from index.js
-    if (Math.round(progress * 100) / 100 === 1 && !this.state.ending) {
-      this.endTrack()
+    const startSeek = () => {
+      // const { position } = useProgress()
+      setSeeking(true)
+      setSeekingValue(position)
     }
 
-    if (
-      nextProps.played !== played ||
-      nextProps.duration !== duration ||
-      nextProps.progress !== progress ||
-      !topScreen ||
-      startSwitch
-    ) {
-      return false
+    const seek = values => {
+      setSeekingValue(values[0])
     }
-    return true
-  }
 
-  render() {
+    const endSeek = () => {
+      setSeeking(false)
+      setRecentlySeeked(true)
+      const { updateProgress, updatePlayed } = props
+      let seekValueSec = seekingValue * duration
+      updatePlayed(seekValueSec)
+      updateProgress(seekingValue)
+      TrackPlayer.seekTo(seekValueSec)
+    }
+
+    const endTrack = async () => {
+      const { updatePlayed, updateProgress, topScreen, endSong } = props
+      setEnding(true)
+
+      updateProgress(0)
+      updatePlayed(0)
+      await TrackPlayer.seekTo(0)
+      if (topScreen) endSong()
+
+      setEnding(false)
+    }
+
     const {
       filledColor,
       height,
@@ -93,16 +57,7 @@ class ProgressBar extends TrackPlayer.ProgressComponent {
       markerColor,
       width,
       _fonts,
-    } = this.props
-
-    let {
-      position: played,
-      duration,
-      seekingValue,
-      recentlySeeked,
-    } = this.state
-
-    let progress = this.getProgress()
+    } = props
 
     const {
       updateDuration,
@@ -110,56 +65,40 @@ class ProgressBar extends TrackPlayer.ProgressComponent {
       updatePlayed,
       duration: propDuration,
       played: propPlayed,
-    } = this.props
+    } = props
 
-    // If track has changed, update the duration
     if (propDuration !== duration) {
       updateDuration(duration)
     }
-    // Update the progress in index if it's changed
-    if (propPlayed !== played) {
-      updateProgress(progress)
-      updatePlayed(played)
+
+    //TODO: look into this function futher
+    if (propPlayed !== position) {
+      updateProgress(position)
+      updatePlayed(position)
     }
 
-    // Boolean flag used to test if the player's position has properly changed
-    // after a seek has happened. This is used to keep the slider from awkwardly
-    // jumping back to its previous value for a brief moment
-    // Logic: if recently seeked and the current played value is within a few
-    // seconds of the seeked value, then the player has properly updated
     const playerUpdatedAfterSeek =
-      Math.abs(played - seekingValue * duration) < 3 && recentlySeeked
-    if (playerUpdatedAfterSeek) this.setState({ recentlySeeked: false })
+      Math.abs(position - seekingValue * duration) < 3 && recentlySeeked
+    if (playerUpdatedAfterSeek) setRecentlySeeked(false)
 
-    // Number used to keep the duration from changing awkwardly
-    // represents the played value using the seeked value, if the user has
-    // recently seeked and the progress has not updated.
-    // Logic "(this.state.seeking || !playerUpdatedAfterSeek) && recentlySeeked"
-    // is used several times throughout the next few lines.
-    // The "&& recentlySeeked" is used to allow the player to properly update
-    // if the user has skipped or rewinded using buttons, because that logic
-    // is housed in index, not here.
     const playedIfSeeked =
-      (this.state.seeking || !playerUpdatedAfterSeek) && recentlySeeked
+      (seeking || !playerUpdatedAfterSeek) && recentlySeeked
         ? seekingValue * duration
-        : played
+        : position
 
-    // Formats duration and played using "hhmmss", padding the numbers and
-    // presenting it as a string.
     let durationFormatted = hhmmss(
       endTimeFormat === 1 ? duration : duration - playedIfSeeked
     )
     if (durationFormatted === '-1:-1:-1') durationFormatted = '0:00'
     const playedFormatted =
-      (this.state.seeking || !playerUpdatedAfterSeek) && recentlySeeked
-        ? hhmmss(this.state.seekingValue * duration)
-        : hhmmss(played)
+      (seeking || !playerUpdatedAfterSeek) && recentlySeeked
+        ? hhmmss(seekingValue * duration)
+        : hhmmss(position)
 
-    // The value that shows up in the slider
     const sliderValue =
-      (this.state.seeking || !playerUpdatedAfterSeek) && recentlySeeked
-        ? this.state.seekingValue
-        : progress
+      (seeking || !playerUpdatedAfterSeek) && recentlySeeked
+        ? seekingValue
+        : position //changed from progress in old version
     const markerStyle = {
       width: markerSize,
       height: markerSize,
@@ -167,7 +106,6 @@ class ProgressBar extends TrackPlayer.ProgressComponent {
         width: 0,
         height: 0,
       },
-      //Makes sure the marker is properly centered on the slider
       marginTop: height - 2,
       borderWidth: 0,
       backgroundColor: markerColor,
@@ -177,8 +115,6 @@ class ProgressBar extends TrackPlayer.ProgressComponent {
       markerStyle.borderColor = borderColor
     }
 
-    // Sets shadow size relative to the size of the marker.
-    // 3 is completely arbitrary
     if (borderShadow) {
       markerStyle.shadowOffset.height = markerSize / 3
     }
@@ -188,6 +124,7 @@ class ProgressBar extends TrackPlayer.ProgressComponent {
     const timeFontStyles = {
       fontFamily: _fonts.body,
     }
+
     return (
       <View style={(styles.wrapper, paddingStyles)}>
         {width !== null && (
@@ -201,9 +138,9 @@ class ProgressBar extends TrackPlayer.ProgressComponent {
                 step={0.01}
                 sliderLength={trackLength}
                 enableLabel={false}
-                onValuesChangeStart={this.startSeek}
-                onValuesChange={this.seek}
-                onValuesChangeFinish={this.endSeek}
+                onValuesChangeStart={startSeek}
+                onValuesChange={seek}
+                onValuesChangeFinish={endSeek}
                 trackStyle={{
                   backgroundColor: unfilledColor,
                   height: height,
@@ -225,8 +162,26 @@ class ProgressBar extends TrackPlayer.ProgressComponent {
         )}
       </View>
     )
+  },
+  (prevProps, nextProps) => {
+    const { played, duration, progress, topScreen, startSwitch } = prevProps //TODO: should this be props or prevpropts?
+
+    if (Math.round(progress * 100) / 100 === 1 && !ending) {
+      endTrack()
+    }
+
+    if (
+      nextProps.played !== played ||
+      nextProps.duration !== duration ||
+      nextProps.progress !== progress ||
+      !topScreen ||
+      startSwitch
+    ) {
+      return false
+    }
+    return true
   }
-}
+)
 
 // Taken from stackoverflow: https://stackoverflow.com/questions/31337370/how-to-convert-seconds-to-hhmmss-in-moment-js
 function pad(num) {

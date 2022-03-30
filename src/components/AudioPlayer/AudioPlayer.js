@@ -47,16 +47,13 @@ class AudioPlayerSub extends Component {
     // Adds the specified song to the track player to be ready to play
     const id = uuid()
 
-    await TrackPlayer.add(
-      {
-        id,
-        url: track.url,
-        title: track.title,
-        artist: track.subtitle,
-        artwork: track.artwork,
-      },
-      0
-    )
+    await TrackPlayer.add({
+      id,
+      url: track.url,
+      title: track.title,
+      artist: track.subtitle,
+      artwork: track.artwork,
+    })
 
     // only play when track is ready
     let isReady = (await TrackPlayer.getState()) === TrackPlayer.STATE_READY
@@ -118,16 +115,13 @@ class AudioPlayerSub extends Component {
       this.setState({ switching: true })
 
       const id = uuid()
-      await TrackPlayer.add(
-        {
-          id,
-          url: track.url,
-          title: track.title,
-          artist: track.subtitle,
-          artwork: track.artwork,
-        },
-        0
-      )
+      await TrackPlayer.add({
+        id,
+        url: track.url,
+        title: track.title,
+        artist: track.subtitle,
+        artwork: track.artwork,
+      })
 
       await TrackPlayer.skip(0)
 
