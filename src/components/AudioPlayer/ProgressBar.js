@@ -3,6 +3,8 @@ import { Text, View, StyleSheet } from 'react-native'
 import TrackPlayer, { useProgress } from 'react-native-track-player'
 import MultiSlider from '@ptomasroos/react-native-multi-slider'
 
+//TODO: on complete actions running multiple times
+
 const ProgressBar = props => {
   const { position, duration } = useProgress()
   const [seeking, setSeeking] = useState(false)
