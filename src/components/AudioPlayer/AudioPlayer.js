@@ -198,7 +198,6 @@ class AudioPlayerSub extends Component {
 
   // When props change
   componentDidUpdate(prevProps) {
-    // const { playing } = this.props
     const { playing, progress, updatePlaying, topScreen } = this.props
 
     // If song has ended, reset progress and trigger end action
