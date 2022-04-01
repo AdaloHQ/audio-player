@@ -3,16 +3,15 @@ import { Text, View, StyleSheet } from 'react-native'
 import TrackPlayer, { useProgress } from 'react-native-track-player'
 import MultiSlider from '@ptomasroos/react-native-multi-slider'
 
-//TODO: on complete actions running multiple times
-
 const ProgressBar = props => {
   const { position, duration } = useProgress()
   const [seeking, setSeeking] = useState(false)
   const [seekingValue, setSeekingValue] = useState(0)
   const [ending, setEnding] = useState(false)
   const [recentlySeeked, setRecentlySeeked] = useState(false)
+  const [endActionRan, setEndActionRan] = useState(false)
 
-    // When the user clicks and holds on the slider
+  // When the user clicks and holds on the slider
 
   const startSeek = () => {
     setSeeking(true)
@@ -21,7 +20,7 @@ const ProgressBar = props => {
   // When the user changes the value but hasn't let go of the slider yet
   const seek = values => {
     setSeekingValue(values[0])
-  }  
+  }
   // User has let go of the slider
   const endSeek = () => {
     setSeeking(false)
@@ -45,7 +44,9 @@ const ProgressBar = props => {
       endSong,
       updatePlaying,
     } = props
+    console.log('end tracK')
     setEnding(true)
+    setEndActionRan(true)
 
     updatePlaying(false)
     updateProgress(0)
@@ -90,6 +91,10 @@ const ProgressBar = props => {
   if (propPlayed !== position) {
     updateProgress(progress)
     updatePlayed(position)
+
+    if (progress < 1 && endActionRan) {
+      setEndActionRan(false)
+    }
   }
 
   // Boolean flag used to test if the player's position has properly changed
@@ -161,7 +166,7 @@ const ProgressBar = props => {
   }
 
   // if song ended, reset track progress and call the endSong function from index.js
-  if (Math.round(progress * 100) / 100 === 1 && !ending) {
+  if (Math.floor(progress * 100) / 100 === 1 && !ending && !endActionRan) {
     endTrack()
   }
 
