@@ -1,8 +1,8 @@
 import React, { Component } from 'react'
-import TrackPlayer, { State } from 'react-native-track-player'
+import TrackPlayer, { State, Capability } from 'react-native-track-player'
 import { v4 as uuid } from 'uuid'
 import ProgressBar from './ProgressBar'
-
+import { Text } from 'react-native'
 class AudioPlayerSub extends Component {
   constructor(props) {
     super(props)
@@ -21,16 +21,10 @@ class AudioPlayerSub extends Component {
       // Whether the player should stop running when the app is closed on Android
       stopWithApp: true,
       // An array of media controls capabilities
-      capabilities: [
-        TrackPlayer.CAPABILITY_PLAY,
-        TrackPlayer.CAPABILITY_PAUSE,
-        TrackPlayer.CAPABILITY_SEEK_TO,
-      ],
+      capabilities: [Capability.Play, Capability.Pause, Capability.SeekTo],
+
       // An array of capabilities that will show up when the notification is in the compact form on Android
-      compactCapabilities: [
-        TrackPlayer.CAPABILITY_PLAY,
-        TrackPlayer.CAPABILITY_PAUSE,
-      ],
+      compactCapabilities: [Capability.Play, Capability.Pause],
     })
 
     const { track, playing, autoplay, updatePlaying } = this.props
@@ -69,7 +63,7 @@ class AudioPlayerSub extends Component {
     } else if (state === State.Paused && playing) {
       updatePlaying(false)
     }
-
+    
     // clean out unnecessary tracks in TrackPlayer queue
     await TrackPlayer.getQueue().then(queue => {
       if (queue.length > 1) {
