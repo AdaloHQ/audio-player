@@ -161,7 +161,7 @@ class AudioPlayerSub extends Component {
     let playerState = await TrackPlayer.getState()
     if (playerState === TrackPlayer.STATE_PLAYING && !playing) {
       updatePlaying(true)
-    } else if(playerState === TrackPlayer.STATE_PAUSED && playing) {
+    } else if (playerState === TrackPlayer.STATE_PAUSED && playing) {
       updatePlaying(false)
     }
 
@@ -198,14 +198,28 @@ class AudioPlayerSub extends Component {
 
   // When props change
   componentDidUpdate(prevProps) {
-    const { playing } = this.props
+    const { playing, progress, updatePlaying, topScreen } = this.props
+
+    // If song has ended, reset progress and trigger end action (android only required)
+    if (
+      Platform.OS === 'android' &&
+      topScreen &&
+      Math.round(progress * 10000) / 10000 >= 1
+    ) {
+      const { updatePlayed, updateProgress, endSong } = this.props
+
+      updatePlayed(0)
+      updateProgress(0)
+
+      endSong()
+      updatePlaying(false)
+    }
 
     this.checkTrack(prevProps)
 
     // Update play/pause if it changed
     if (prevProps.playing !== playing) {
       playing ? TrackPlayer.play() : TrackPlayer.pause()
-
     }
   }
 
