@@ -200,8 +200,12 @@ class AudioPlayerSub extends Component {
   componentDidUpdate(prevProps) {
     const { playing, progress, updatePlaying, topScreen } = this.props
 
-    // If song has ended, reset progress and trigger end action
-    if (topScreen && Math.round(progress * 10000) / 10000 >= 1) {
+    // If song has ended, reset progress and trigger end action (android only required)
+    if (
+      Platform.OS === 'android' &&
+      topScreen &&
+      Math.round(progress * 10000) / 10000 >= 1
+    ) {
       const { updatePlayed, updateProgress, endSong } = this.props
 
       updatePlayed(0)
