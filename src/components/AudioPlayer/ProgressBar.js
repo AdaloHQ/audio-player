@@ -44,7 +44,6 @@ const ProgressBar = props => {
       endSong,
       updatePlaying,
     } = props
-    console.log('end tracK')
     setEnding(true)
     setEndActionRan(true)
 
