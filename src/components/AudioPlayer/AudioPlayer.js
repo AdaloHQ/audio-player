@@ -1,8 +1,8 @@
 import React, { Component } from 'react'
-import TrackPlayer from 'react-native-track-player'
+import TrackPlayer, { State, Capability } from 'react-native-track-player'
 import { v4 as uuid } from 'uuid'
 import ProgressBar from './ProgressBar'
-
+import { Text } from 'react-native'
 class AudioPlayerSub extends Component {
   constructor(props) {
     super(props)
@@ -21,29 +21,21 @@ class AudioPlayerSub extends Component {
       // Whether the player should stop running when the app is closed on Android
       stopWithApp: true,
       // An array of media controls capabilities
-      capabilities: [
-        TrackPlayer.CAPABILITY_PLAY,
-        TrackPlayer.CAPABILITY_PAUSE,
-        TrackPlayer.CAPABILITY_SEEK_TO,
-      ],
+      capabilities: [Capability.Play, Capability.Pause, Capability.SeekTo],
+
       // An array of capabilities that will show up when the notification is in the compact form on Android
-      compactCapabilities: [
-        TrackPlayer.CAPABILITY_PLAY,
-        TrackPlayer.CAPABILITY_PAUSE,
-      ],
+      compactCapabilities: [Capability.Play, Capability.Pause],
     })
 
     const { track, playing, autoplay, updatePlaying } = this.props
 
-    if (
-      (await TrackPlayer.getState()) === TrackPlayer.STATE_PAUSED &&
-      autoplay
-    ) {
+    if ((await TrackPlayer.getState()) === State.Paused && autoplay) {
       await TrackPlayer.reset()
     }
 
     // Adds the specified song to the track player to be ready to play
     const id = uuid()
+
     await TrackPlayer.add({
       id,
       url: track.url,
@@ -53,9 +45,9 @@ class AudioPlayerSub extends Component {
     })
 
     // only play when track is ready
-    let isReady = (await TrackPlayer.getState()) === TrackPlayer.STATE_READY
+    let isReady = (await TrackPlayer.getState()) === State.Ready
     while (!isReady) {
-      isReady = (await TrackPlayer.getState()) === TrackPlayer.STATE_READY
+      isReady = (await TrackPlayer.getState()) === State.Ready
     }
 
     // If player was already set to play or set to autoplay, start playing
@@ -66,16 +58,16 @@ class AudioPlayerSub extends Component {
 
     // ensure play/pause button matches playing prop
     let state = await TrackPlayer.getState()
-    if (state === TrackPlayer.STATE_PLAYING && !playing) {
+    if (state === State.Playing && !playing) {
       updatePlaying(true)
-    } else if (state === TrackPlayer.STATE_PAUSED && playing) {
+    } else if (state === State.Paused && playing) {
       updatePlaying(false)
     }
-
+    
     // clean out unnecessary tracks in TrackPlayer queue
     await TrackPlayer.getQueue().then(queue => {
       if (queue.length > 1) {
-        TrackPlayer.remove(queue[0].id)
+        TrackPlayer.remove(0)
       }
     })
   }
@@ -106,8 +98,7 @@ class AudioPlayerSub extends Component {
       keepPlaying,
     } = this.props
 
-    const id = await TrackPlayer.getCurrentTrack()
-    const oldTrack = await TrackPlayer.getTrack(id)
+    const oldTrack = await TrackPlayer.getTrack(0)
 
     if (topScreen && !this.state.switching && oldTrack?.url !== track.url) {
       this.setState({ switching: true })
@@ -121,7 +112,7 @@ class AudioPlayerSub extends Component {
         artwork: track.artwork,
       })
 
-      await TrackPlayer.skip(id)
+      await TrackPlayer.skip(0)
 
       // prevents previous screen's audio playing on new screens' audio player
       if (keepPlaying) {
@@ -130,9 +121,9 @@ class AudioPlayerSub extends Component {
       }
 
       //check that new track is ready before playing
-      let isReady = (await TrackPlayer.getState()) === TrackPlayer.STATE_READY
+      let isReady = (await TrackPlayer.getState()) === State.Ready
       while (!isReady) {
-        isReady = (await TrackPlayer.getState()) === TrackPlayer.STATE_READY
+        isReady = (await TrackPlayer.getState()) === State.Ready
       }
 
       // reset prevProgress if already
@@ -159,16 +150,16 @@ class AudioPlayerSub extends Component {
 
     // ensure play/pause button matches playing prop
     let playerState = await TrackPlayer.getState()
-    if (playerState === TrackPlayer.STATE_PLAYING && !playing) {
+    if (playerState === State.Playing && !playing) {
       updatePlaying(true)
-    } else if(playerState === TrackPlayer.STATE_PAUSED && playing) {
+    } else if (playerState === State.Paused && playing) {
       updatePlaying(false)
     }
 
     // clean out unnecessary tracks in TrackPlayer queue
     await TrackPlayer.getQueue().then(queue => {
       if (queue.length > 1) {
-        TrackPlayer.remove(queue[0].id)
+        TrackPlayer.remove(0)
       }
     })
   }
@@ -205,7 +196,14 @@ class AudioPlayerSub extends Component {
     // Update play/pause if it changed
     if (prevProps.playing !== playing) {
       playing ? TrackPlayer.play() : TrackPlayer.pause()
+    }
+  }
 
+  updatePlaying(playing) {
+    if (playing) {
+      TrackPlayer.play()
+    } else {
+      TrackPlayer.pause()
     }
   }
 
@@ -216,6 +214,7 @@ class AudioPlayerSub extends Component {
         {...this.props}
         switching={this.state.switching}
         startSwitch={this.state.startSwitch}
+        updatePlaying={this.updatePlaying}
       />
     )
   }
