@@ -14,11 +14,7 @@ const ProgressBar = props => {
   const [currentTrack, updateCurrentTrack] = useState(props.track)
 
   useEffect(() => {
-    const {
-      updatePlayed,
-      updateProgress,
-      updatePlaying,
-    } = props
+    const { updatePlayed, updateProgress, updatePlaying } = props
 
     updateDuration(duration)
     updatePlaying(false)
@@ -187,10 +183,6 @@ const ProgressBar = props => {
   if (Math.floor(progress * 100) / 100 === 1 && !ending && !endActionRan) {
     endTrack()
   }
-
-  TrackPlayer.getQueue().then(queue => {
-    console.log('queue2', queue)
-  })
 
   return (
     <View style={(styles.wrapper, paddingStyles)}>

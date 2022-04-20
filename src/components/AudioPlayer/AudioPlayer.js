@@ -64,12 +64,10 @@ class AudioPlayerSub extends Component {
       updatePlaying(false)
     }
 
-    // clean out unnecessary tracks in TrackPlayer queue
-    await TrackPlayer.getQueue().then(queue => {
-      if (queue.length > 1) {
-        TrackPlayer.remove(0)
-      }
-    })
+    queue = await TrackPlayer.getQueue()
+    if (queue.length > 1) {
+      await TrackPlayer.removeUpcomingTracks()
+    }
   }
 
   // Generic seeking function used by index to handle skip and rewind.
@@ -158,11 +156,10 @@ class AudioPlayerSub extends Component {
     }
 
     // clean out unnecessary tracks in TrackPlayer queue
-    await TrackPlayer.getQueue().then(queue => {
-      if (queue.length > 1) {
-        TrackPlayer.remove(0)
-      }
-    })
+    const queue = await TrackPlayer.getQueue()
+    if (queue.length > 1) {
+      await TrackPlayer.removeUpcomingTracks()
+    }
   }
 
   shouldComponentUpdate(nextProps) {
