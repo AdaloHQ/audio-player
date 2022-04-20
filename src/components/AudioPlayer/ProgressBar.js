@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Text, View, StyleSheet } from 'react-native'
 import TrackPlayer, { useProgress } from 'react-native-track-player'
 import MultiSlider from '@ptomasroos/react-native-multi-slider'
@@ -10,6 +10,25 @@ const ProgressBar = props => {
   const [ending, setEnding] = useState(false)
   const [recentlySeeked, setRecentlySeeked] = useState(false)
   const [endActionRan, setEndActionRan] = useState(false)
+
+  const [currentTrack, updateCurrentTrack] = useState(props.track)
+
+  useEffect(() => {
+    const {
+      updatePlayed,
+      updateProgress,
+      updatePlaying,
+    } = props
+
+    updateDuration(duration)
+    updatePlaying(false)
+    updateProgress(0)
+    updatePlayed(0)
+    const seek = async () => {
+      await TrackPlayer.seekTo(0)
+    }
+    seek()
+  }, [currentTrack, duration])
 
   // When the user clicks and holds on the slider
 
@@ -168,6 +187,10 @@ const ProgressBar = props => {
   if (Math.floor(progress * 100) / 100 === 1 && !ending && !endActionRan) {
     endTrack()
   }
+
+  TrackPlayer.getQueue().then(queue => {
+    console.log('queue2', queue)
+  })
 
   return (
     <View style={(styles.wrapper, paddingStyles)}>

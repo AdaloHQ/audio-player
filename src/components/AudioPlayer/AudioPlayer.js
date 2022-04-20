@@ -63,7 +63,7 @@ class AudioPlayerSub extends Component {
     } else if (state === State.Paused && playing) {
       updatePlaying(false)
     }
-    
+
     // clean out unnecessary tracks in TrackPlayer queue
     await TrackPlayer.getQueue().then(queue => {
       if (queue.length > 1) {
@@ -112,7 +112,8 @@ class AudioPlayerSub extends Component {
         artwork: track.artwork,
       })
 
-      await TrackPlayer.skip(0)
+      await TrackPlayer.skipToNext()
+      await TrackPlayer.remove(0)
 
       // prevents previous screen's audio playing on new screens' audio player
       if (keepPlaying) {
