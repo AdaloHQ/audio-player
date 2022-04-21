@@ -1,49 +1,41 @@
-import React, { useState, useEffect } from 'react'
+import React from 'react'
 import { Text, View, StyleSheet } from 'react-native'
-import TrackPlayer, { useProgress } from 'react-native-track-player'
+import TrackPlayer from 'react-native-track-player-old'
 import MultiSlider from '@ptomasroos/react-native-multi-slider'
 
-const ProgressBar = props => {
-  const { position, duration } = useProgress()
-  const [seeking, setSeeking] = useState(false)
-  const [seekingValue, setSeekingValue] = useState(0)
-  const [ending, setEnding] = useState(false)
-  const [recentlySeeked, setRecentlySeeked] = useState(false)
-  const [endActionRan, setEndActionRan] = useState(false)
-
-  const [currentTrack, updateCurrentTrack] = useState(props.track)
-
-  useEffect(() => {
-    const { updatePlayed, updateProgress, updatePlaying } = props
-
-    updateDuration(duration)
-    updatePlaying(false)
-    updateProgress(0)
-    updatePlayed(0)
-    const seek = async () => {
-      await TrackPlayer.seekTo(0)
+// Based off of the web version, with a few major differences
+class ProgressBar extends TrackPlayer.ProgressComponent {
+  constructor(props) {
+    super(props)
+    this.state = {
+      seeking: false,
+      seekingValue: 0,
+      ending: false,
+      endActionRan: false,
     }
-    seek()
-  }, [currentTrack, duration])
+  }
 
   // When the user clicks and holds on the slider
-
-  const startSeek = () => {
-    setSeeking(true)
-    setSeekingValue(position)
+  startSeek = () => {
+    const { progress } = this.props
+    this.setState({ seeking: true, seekingValue: progress })
   }
   // When the user changes the value but hasn't let go of the slider yet
-  const seek = values => {
-    setSeekingValue(values[0])
+  seek = values => {
+    this.setState({ seekingValue: values[0] })
   }
   // User has let go of the slider
-  const endSeek = () => {
-    setSeeking(false)
-    // Recently seeked is for logic concerning the value of the slider.
-    // Used to address issue where the slider would randomly jump back to
-    // where it was before the user seeked for a brief moment in time.
-    setRecentlySeeked(true)
-    const { updateProgress, updatePlayed } = props
+  endSeek = () => {
+    this.setState({
+      seeking: false,
+      progress: seekingValue,
+      // Recently seeked is for logic concerning the value of the slider.
+      // Used to address issue where the slider would randomly jump back to
+      // where it was before the user seeked for a brief moment in time.
+      recentlySeeked: true,
+    })
+    const { updateProgress, updatePlayed } = this.props
+    const { duration, seekingValue } = this.state
     let seekValueSec = seekingValue * duration
     updatePlayed(seekValueSec)
     updateProgress(seekingValue)
@@ -51,176 +43,197 @@ const ProgressBar = props => {
   }
 
   // resets progress to zero and calls on the action for the end of a song
-  const endTrack = async () => {
-    const {
-      updatePlayed,
-      updateProgress,
-      topScreen,
-      endSong,
-      updatePlaying,
-    } = props
-    setEnding(true)
-    setEndActionRan(true)
+  endTrack = async () => {
+    const { updatePlayed, updateProgress, topScreen, endSong } = this.props
+    this.setState({ ending: true, endActionRan: true })
 
-    updatePlaying(false)
     updateProgress(0)
     updatePlayed(0)
     await TrackPlayer.seekTo(0)
     if (topScreen) endSong()
 
-    setEnding(false)
+    this.setState({ ending: false })
   }
 
-  const {
-    filledColor,
-    height,
-    unfilledColor,
-    progressRounding,
-    markerSize,
-    border,
-    borderColor,
-    borderSize,
-    borderShadow,
-    endTimeFormat,
-    markerColor,
-    width,
-    _fonts,
-  } = props
-  let progress = isNaN(position / duration) ? 0 : position / duration
+  // In the mobile version, played, duration, and progress are all updated by
+  // the render function in ProgressBar, not the AudioPlayerSub, so if there are differences
+  // between the new props and the old props, don't rerender.
+  // Prevents an infinite loop.
+  shouldComponentUpdate(nextProps, nextState) {
+    const { played, duration, progress, topScreen, startSwitch } = this.props
 
-  const {
-    updateDuration,
-    updateProgress,
-    updatePlayed,
-    duration: propDuration,
-    played: propPlayed,
-  } = props
-
-  // If track has changed, update the duration
-  if (propDuration !== duration) {
-    updateDuration(duration)
-  }
-
-  // Update the progress in index if it's changed
-  if (propPlayed !== position) {
-    updateProgress(progress)
-    updatePlayed(position)
-
-    if (progress < 1 && endActionRan) {
-      setEndActionRan(false)
+    if (
+      Math.floor(progress * 100) / 100 === 1 &&
+      !this.state.ending &&
+      !this.state.endActionRan &&
+      !nextState.endActionRan
+    ) {
+      this.endTrack()
     }
+
+    if (
+      nextProps.played !== played ||
+      nextProps.duration !== duration ||
+      nextProps.progress !== progress ||
+      !topScreen ||
+      startSwitch
+    ) {
+      return false
+    }
+    return true
   }
 
-  // Boolean flag used to test if the player's position has properly changed
-  // after a seek has happened. This is used to keep the slider from awkwardly
-  // jumping back to its previous value for a brief moment
-  // Logic: if recently seeked and the current played value is within a few
-  // seconds of the seeked value, then the player has properly updated
-  const playerUpdatedAfterSeek =
-    Math.abs(position - seekingValue * duration) < 3 && recentlySeeked
-  if (playerUpdatedAfterSeek) setRecentlySeeked(false)
+  render() {
+    const {
+      filledColor,
+      height,
+      unfilledColor,
+      progressRounding,
+      markerSize,
+      border,
+      borderColor,
+      borderSize,
+      borderShadow,
+      endTimeFormat,
+      markerColor,
+      width,
+      _fonts,
+    } = this.props
 
-  // Number used to keep the duration from changing awkwardly
-  // represents the played value using the seeked value, if the user has
-  // recently seeked and the progress has not updated.
-  // Logic "(this.state.seeking || !playerUpdatedAfterSeek) && recentlySeeked"
-  // is used several times throughout the next few lines.
-  // The "&& recentlySeeked" is used to allow the player to properly update
-  // if the user has skipped or rewinded using buttons, because that logic
-  // is housed in index, not here.
-  const playedIfSeeked =
-    (seeking || !playerUpdatedAfterSeek) && recentlySeeked
-      ? seekingValue * duration
-      : position
+    let {
+      position: played,
+      duration,
+      seekingValue,
+      recentlySeeked,
+    } = this.state
 
-  // Formats duration and played using "hhmmss", padding the numbers and
-  // presenting it as a string.
-  let durationFormatted = hhmmss(
-    endTimeFormat === 1 ? duration : duration - playedIfSeeked
-  )
-  if (durationFormatted === '-1:-1:-1') durationFormatted = '0:00'
-  const playedFormatted =
-    (seeking || !playerUpdatedAfterSeek) && recentlySeeked
-      ? hhmmss(seekingValue * duration)
-      : hhmmss(position)
+    let progress = this.getProgress()
 
-  // The value that shows up in the slider
-  const sliderValue =
-    (seeking || !playerUpdatedAfterSeek) && recentlySeeked
-      ? seekingValue
-      : progress
+    const {
+      updateDuration,
+      updateProgress,
+      updatePlayed,
+      duration: propDuration,
+      played: propPlayed,
+    } = this.props
 
-  const markerStyle = {
-    width: markerSize,
-    height: markerSize,
-    shadowOffset: {
-      width: 0,
-      height: 0,
-    },
-    //Makes sure the marker is properly centered on the slider
-    marginTop: height - 2,
-    borderWidth: 0,
-    backgroundColor: markerColor,
-  }
-  if (border) {
-    markerStyle.borderWidth = borderSize
-    markerStyle.borderColor = borderColor
-  }
+    // If track has changed, update the duration
+    if (propDuration !== duration) {
+      updateDuration(duration)
+    }
+    // Update the progress in index if it's changed
+    if (propPlayed !== played) {
+      updateProgress(progress)
+      updatePlayed(played)
+      if (progress < 1 && this.state.endActionRan) {
+        this.setState({ endActionRan: false })
+      }
+    }
 
-  // Sets shadow size relative to the size of the marker.
-  // 3 is completely arbitrary
-  if (borderShadow) {
-    markerStyle.shadowOffset.height = markerSize / 3
-  }
-  const padding = Math.ceil(markerSize / 2)
-  const paddingStyles = { paddingLeft: padding, paddingRight: padding }
-  const trackLength = width - padding * 2
-  const timeFontStyles = {
-    fontFamily: _fonts.body,
-  }
+    // Boolean flag used to test if the player's position has properly changed
+    // after a seek has happened. This is used to keep the slider from awkwardly
+    // jumping back to its previous value for a brief moment
+    // Logic: if recently seeked and the current played value is within a few
+    // seconds of the seeked value, then the player has properly updated
+    const playerUpdatedAfterSeek =
+      Math.abs(played - seekingValue * duration) < 3 && recentlySeeked
+    if (playerUpdatedAfterSeek) this.setState({ recentlySeeked: false })
 
-  // if song ended, reset track progress and call the endSong function from index.js
-  if (Math.floor(progress * 100) / 100 === 1 && !ending && !endActionRan) {
-    endTrack()
-  }
+    // Number used to keep the duration from changing awkwardly
+    // represents the played value using the seeked value, if the user has
+    // recently seeked and the progress has not updated.
+    // Logic "(this.state.seeking || !playerUpdatedAfterSeek) && recentlySeeked"
+    // is used several times throughout the next few lines.
+    // The "&& recentlySeeked" is used to allow the player to properly update
+    // if the user has skipped or rewinded using buttons, because that logic
+    // is housed in index, not here.
+    const playedIfSeeked =
+      (this.state.seeking || !playerUpdatedAfterSeek) && recentlySeeked
+        ? seekingValue * duration
+        : played
 
-  return (
-    <View style={(styles.wrapper, paddingStyles)}>
-      {width !== null && (
-        <View>
-          <View style={styles.seekBar}>
-            <MultiSlider
-              enabledOne
-              min={0}
-              max={1}
-              values={[sliderValue]}
-              step={0.01}
-              sliderLength={trackLength}
-              enableLabel={false}
-              onValuesChangeStart={startSeek}
-              onValuesChange={seek}
-              onValuesChangeFinish={endSeek}
-              trackStyle={{
-                backgroundColor: unfilledColor,
-                height: height,
-                borderRadius: progressRounding,
-              }}
-              selectedStyle={{
-                backgroundColor: filledColor,
-                height: height,
-                borderRadius: progressRounding,
-              }}
-              markerStyle={markerStyle}
-            />
+    // Formats duration and played using "hhmmss", padding the numbers and
+    // presenting it as a string.
+    let durationFormatted = hhmmss(
+      endTimeFormat === 1 ? duration : duration - playedIfSeeked
+    )
+    if (durationFormatted === '-1:-1:-1') durationFormatted = '0:00'
+    const playedFormatted =
+      (this.state.seeking || !playerUpdatedAfterSeek) && recentlySeeked
+        ? hhmmss(this.state.seekingValue * duration)
+        : hhmmss(played)
+
+    // The value that shows up in the slider
+    const sliderValue =
+      (this.state.seeking || !playerUpdatedAfterSeek) && recentlySeeked
+        ? this.state.seekingValue
+        : progress
+    const markerStyle = {
+      width: markerSize,
+      height: markerSize,
+      shadowOffset: {
+        width: 0,
+        height: 0,
+      },
+      //Makes sure the marker is properly centered on the slider
+      marginTop: height - 2,
+      borderWidth: 0,
+      backgroundColor: markerColor,
+    }
+    if (border) {
+      markerStyle.borderWidth = borderSize
+      markerStyle.borderColor = borderColor
+    }
+
+    // Sets shadow size relative to the size of the marker.
+    // 3 is completely arbitrary
+    if (borderShadow) {
+      markerStyle.shadowOffset.height = markerSize / 3
+    }
+    const padding = Math.ceil(markerSize / 2)
+    const paddingStyles = { paddingLeft: padding, paddingRight: padding }
+    const trackLength = width - padding * 2
+    const timeFontStyles = {
+      fontFamily: _fonts.body,
+    }
+    return (
+      <View style={(styles.wrapper, paddingStyles)}>
+        {width !== null && (
+          <View>
+            <View style={styles.seekBar}>
+              <MultiSlider
+                enabledOne
+                min={0}
+                max={1}
+                values={[sliderValue]}
+                step={0.01}
+                sliderLength={trackLength}
+                enableLabel={false}
+                onValuesChangeStart={this.startSeek}
+                onValuesChange={this.seek}
+                onValuesChangeFinish={this.endSeek}
+                trackStyle={{
+                  backgroundColor: unfilledColor,
+                  height: height,
+                  borderRadius: progressRounding,
+                }}
+                selectedStyle={{
+                  backgroundColor: filledColor,
+                  height: height,
+                  borderRadius: progressRounding,
+                }}
+                markerStyle={markerStyle}
+              />
+            </View>
+            <View style={styles.timeText}>
+              <Text style={timeFontStyles}>{playedFormatted}</Text>
+              <Text style={timeFontStyles}>{durationFormatted}</Text>
+            </View>
           </View>
-          <View style={styles.timeText}>
-            <Text style={timeFontStyles}>{playedFormatted}</Text>
-            <Text style={timeFontStyles}>{durationFormatted}</Text>
-          </View>
-        </View>
-      )}
-    </View>
-  )
+        )}
+      </View>
+    )
+  }
 }
 
 // Taken from stackoverflow: https://stackoverflow.com/questions/31337370/how-to-convert-seconds-to-hhmmss-in-moment-js
