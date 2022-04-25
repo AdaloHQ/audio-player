@@ -14,7 +14,7 @@ const ProgressBar = props => {
   const [currentTrack, updateCurrentTrack] = useState(props.track)
 
   useEffect(() => {
-    const { updatePlayed, updateProgress, updatePlaying } = props
+    const { updatePlayed, updateProgress, updatePlaying, autoplay } = props
 
     updateDuration(duration)
     updatePlaying(false)
@@ -24,6 +24,10 @@ const ProgressBar = props => {
       await TrackPlayer.seekTo(0)
     }
     seek()
+
+    if (autoplay) {
+      updatePlaying(true)
+    }
   }, [currentTrack, duration])
 
   // When the user clicks and holds on the slider
