@@ -1,6 +1,6 @@
 {
   "name": "@adalo/audio-player",
-  "version": "1.4.15",
+  "version": "1.4.18",
   "license": "MIT",
   "author": "Adalo",
   "main": "index.js",
@@ -56,7 +56,6 @@
     "moment": "^2.26.0",
     "react-native-swift": "^1.2.3",
     "react-native-track-player": "^2.1.2",
-    "react-native-track-player-old": "yarn:react-native-track-player@1.2.3",
     "react-native-vector-icons": "^6.6.0",
     "uuid": "^3.0.0"
   }
