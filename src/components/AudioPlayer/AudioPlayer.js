@@ -63,13 +63,11 @@ class AudioPlayerSub extends Component {
     } else if (state === State.Paused && playing) {
       updatePlaying(false)
     }
-    
-    // clean out unnecessary tracks in TrackPlayer queue
-    await TrackPlayer.getQueue().then(queue => {
-      if (queue.length > 1) {
-        TrackPlayer.remove(0)
-      }
-    })
+
+    queue = await TrackPlayer.getQueue()
+    if (queue.length > 1) {
+      await TrackPlayer.removeUpcomingTracks()
+    }
   }
 
   // Generic seeking function used by index to handle skip and rewind.
@@ -112,7 +110,8 @@ class AudioPlayerSub extends Component {
         artwork: track.artwork,
       })
 
-      await TrackPlayer.skip(0)
+      await TrackPlayer.skipToNext()
+      await TrackPlayer.remove(0)
 
       // prevents previous screen's audio playing on new screens' audio player
       if (keepPlaying) {
@@ -157,11 +156,10 @@ class AudioPlayerSub extends Component {
     }
 
     // clean out unnecessary tracks in TrackPlayer queue
-    await TrackPlayer.getQueue().then(queue => {
-      if (queue.length > 1) {
-        TrackPlayer.remove(0)
-      }
-    })
+    const queue = await TrackPlayer.getQueue()
+    if (queue.length > 1) {
+      await TrackPlayer.removeUpcomingTracks()
+    }
   }
 
   shouldComponentUpdate(nextProps) {

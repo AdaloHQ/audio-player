@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Text, View, StyleSheet } from 'react-native'
 import TrackPlayer, { useProgress } from 'react-native-track-player'
 import MultiSlider from '@ptomasroos/react-native-multi-slider'
@@ -10,6 +10,25 @@ const ProgressBar = props => {
   const [ending, setEnding] = useState(false)
   const [recentlySeeked, setRecentlySeeked] = useState(false)
   const [endActionRan, setEndActionRan] = useState(false)
+
+  const [currentTrack, updateCurrentTrack] = useState(props.track)
+
+  useEffect(() => {
+    const { updatePlayed, updateProgress, updatePlaying, autoplay } = props
+
+    updateDuration(duration)
+    updatePlaying(false)
+    updateProgress(0)
+    updatePlayed(0)
+    const seek = async () => {
+      await TrackPlayer.seekTo(0)
+    }
+    seek()
+
+    if (autoplay) {
+      updatePlaying(true)
+    }
+  }, [currentTrack, duration])
 
   // When the user clicks and holds on the slider
 
