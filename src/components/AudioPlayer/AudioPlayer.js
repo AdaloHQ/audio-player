@@ -9,10 +9,15 @@ class AudioPlayerSub extends Component {
     this.state = { switching: false, startSwitch: false }
 
     // Sets up everything on react-native-track-player's end
-    this.setup()
+    // this.setup()
+  }
+
+  async componentDidMount() {
+    await this.setup()
   }
 
   setup = async () => {
+    //TODO: add a state variable to keep audio player from rendering?
     await TrackPlayer.setupPlayer()
 
     TrackPlayer.registerPlaybackService(() => require('./service'))
@@ -63,11 +68,6 @@ class AudioPlayerSub extends Component {
     } else if (state === State.Paused && playing) {
       updatePlaying(false)
     }
-
-    queue = await TrackPlayer.getQueue()
-    if (queue.length > 1) {
-      await TrackPlayer.removeUpcomingTracks()
-    }
   }
 
   // Generic seeking function used by index to handle skip and rewind.
@@ -102,6 +102,7 @@ class AudioPlayerSub extends Component {
       this.setState({ switching: true })
 
       const id = uuid()
+      await TrackPlayer.reset()
       await TrackPlayer.add({
         id,
         url: track.url,
@@ -111,9 +112,9 @@ class AudioPlayerSub extends Component {
       })
 
       await TrackPlayer.skipToNext()
-      if ((await TrackPlayer.getQueue().length) > 0) {
-        await TrackPlayer.remove(0)
-      }
+      // if ((await TrackPlayer.getQueue().length) > 0) {
+      //   await TrackPlayer.remove(0)
+      // }
 
       // prevents previous screen's audio playing on new screens' audio player
       if (keepPlaying) {
@@ -159,9 +160,9 @@ class AudioPlayerSub extends Component {
 
     // clean out unnecessary tracks in TrackPlayer queue
     const queue = await TrackPlayer.getQueue()
-    if (queue.length > 1) {
-      await TrackPlayer.removeUpcomingTracks()
-    }
+    // if (queue.length > 1) {
+    //   await TrackPlayer.removeUpcomingTracks()
+    // }
   }
 
   shouldComponentUpdate(nextProps) {
