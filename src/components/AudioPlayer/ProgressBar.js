@@ -30,6 +30,16 @@ const ProgressBar = props => {
     }
   }, [currentTrack, duration])
 
+  useEffect(() => {
+    if (
+      Math.floor(position) / Math.floor(duration) === 1 &&
+      !ending &&
+      !endActionRan
+    ) {
+      endTrack()
+    }
+  }, [position, duration])
+
   // When the user clicks and holds on the slider
 
   const startSeek = () => {
@@ -65,13 +75,11 @@ const ProgressBar = props => {
     } = props
     setEnding(true)
     setEndActionRan(true)
-
     updatePlaying(false)
     updateProgress(0)
     updatePlayed(0)
     await TrackPlayer.seekTo(0)
     if (topScreen) endSong()
-
     setEnding(false)
   }
 
@@ -181,11 +189,6 @@ const ProgressBar = props => {
   const trackLength = width - padding * 2
   const timeFontStyles = {
     fontFamily: _fonts.body,
-  }
-
-  // if song ended, reset track progress and call the endSong function from index.js
-  if (Math.floor(progress * 100) / 100 === 1 && !ending && !endActionRan) {
-    endTrack()
   }
 
   return (
