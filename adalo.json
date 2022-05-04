@@ -1,0 +1,14 @@
+{
+  "author": "Adalo",
+  "description": "Play any audio file stored in Adalo or via external URL. Great for music, podcasts, etc.",
+  "logo": "./logo.png",
+  "displayName": "Audio Player",
+  "components": [
+    {
+      "name": "AudioPlayer",
+      "manifest": "./src/components/AudioPlayer/manifest.json"
+    }
+  ],
+  "iosInstallScript": "./scripts/install_ios.sh",
+  "androidInstallScript": "./scripts/install_android.sh"
+}
