@@ -191,11 +191,14 @@ class AudioPlayerSub extends Component {
     }
   }
 
-  updatePlaying(playing) {
+  updatePlaying = playing => {
+    const { updatePlaying: updatePlayingProp } = this.props
     if (playing) {
       TrackPlayer.play()
+      updatePlayingProp(true)
     } else {
       TrackPlayer.pause()
+      updatePlayingProp(false)
     }
   }
 
