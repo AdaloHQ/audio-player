@@ -35,6 +35,34 @@ class AudioPlayer extends Component {
     }
   }
 
+  componentDidUpdate(prevProps) {
+    const { url, title, subtitle, artwork, editor } = this.props
+    if (prevProps !== this.props && !editor) {
+      this.setState({
+        // Controls play/pause buttons, as well as playback
+        playing: false,
+        // Validity of url being played
+        playable: true,
+        // Proportion of song played (from 0 to 1)
+        progress: 0,
+        // Proportion of previous song played (0 if no previous song)
+        prevProgress: 0,
+        // Duration of song
+        duration: 0,
+        // Time played of song (in seconds)
+        played: 0,
+        // Info for the specific song currently playing.
+        track: {
+          url,
+          title,
+          subtitle,
+          artwork: artwork.artworkURL,
+        },
+        width: null,
+      })
+    }
+  }
+
   // Taken from range-slider code Jeremy wrote to dynamically change width
   handleLayout = ({ nativeEvent }) => {
     const { width } = (nativeEvent && nativeEvent.layout) || {}
