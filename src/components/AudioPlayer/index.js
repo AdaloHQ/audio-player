@@ -35,31 +35,20 @@ class AudioPlayer extends Component {
     }
   }
 
-  componentDidUpdate(prevProps) {
-    const { url, title, subtitle, artwork, editor } = this.props
-    if (prevProps !== this.props && !editor) {
-      this.setState({
-        // Controls play/pause buttons, as well as playback
-        playing: false,
-        // Validity of url being played
-        playable: true,
-        // Proportion of song played (from 0 to 1)
-        progress: 0,
-        // Proportion of previous song played (0 if no previous song)
-        prevProgress: 0,
-        // Duration of song
-        duration: 0,
-        // Time played of song (in seconds)
-        played: 0,
-        // Info for the specific song currently playing.
-        track: {
-          url,
-          title,
-          subtitle,
-          artwork: artwork.artworkURL,
-        },
-        width: null,
-      })
+  static getDerivedStateFromProps(nextProps, prevState) {
+    const { track } = prevState
+    const { url, title, subtitle, artwork, topScreen } = nextProps
+    const nextTrack = {
+      url,
+      title,
+      subtitle,
+      artwork: artwork.artworkURL,
+    }
+
+    if (JSON.stringify(track) !== JSON.stringify(nextTrack) && topScreen) {
+      return { ...prevState, track: nextTrack }
+    } else {
+      return null
     }
   }
 
@@ -208,7 +197,7 @@ class AudioPlayer extends Component {
       // whether to pause when changing away from audio player screens
       keepPlaying,
     } = this.props
-    const { width } = this.state
+    const { width, track } = this.state
     const artworkWidth = (width * artwork.artworkPercent) / 100
     const dynamicStyles = {
       artwork: {
@@ -343,6 +332,7 @@ class AudioPlayer extends Component {
                 keepPlaying={
                   typeof keepPlaying !== 'undefined' ? keepPlaying : true
                 }
+                key={`key.${JSON.stringify(track)}`}
               />
               <ControlScheme {...buttonConfig} {...this.state} />
             </View>
@@ -387,6 +377,7 @@ class AudioPlayer extends Component {
                 keepPlaying={
                   typeof keepPlaying !== 'undefined' ? keepPlaying : true
                 }
+                key={`key.${JSON.stringify(track)}`}
               />
               {title != '' ? (
                 <Text style={dynamicStyles.title}>{title}</Text>
@@ -444,6 +435,7 @@ class AudioPlayer extends Component {
                 keepPlaying={
                   typeof keepPlaying !== 'undefined' ? keepPlaying : true
                 }
+                key={`key.${JSON.stringify(track)}`}
               />
             </View>
           )}
