@@ -17,7 +17,6 @@ class AudioPlayerSub extends Component {
   }
 
   setup = async () => {
-    //TODO: add a state variable to keep audio player from rendering?
     await TrackPlayer.setupPlayer()
 
     TrackPlayer.registerPlaybackService(() => require('./service'))
