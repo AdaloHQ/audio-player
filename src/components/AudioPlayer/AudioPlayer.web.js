@@ -9,26 +9,26 @@ export default class AudioPlayerSub extends Component {
   }
 
   componentDidMount() {
+    const { updateDuration, updatePlayed, updateProgress } = this.props
+
     this.player.addEventListener('timeupdate', e => {
-      const { updatePlayed, updateProgress } = this.props
       const { duration, currentTime } = e.target
-      updatePlayed(currentTime)
       const progress = currentTime / duration
+
+      updatePlayed(currentTime)
       updateProgress(progress)
     })
+
     this.player.addEventListener('durationchange', e => {
-      const { duration } = e.target
-      const { updateDuration } = this.props
-      updateDuration(duration)
+      updateDuration(e.target.duration)
     })
+
     this.player.addEventListener('error', e => {
-      console.error('Audio player error!!! ', e.target.error)
+      console.error('Problem with the audio player: ', e.target.error)
       this.player.src = ''
     })
-    const {
-      track: { url },
-    } = this.props
-    this.addUrl(url)
+
+    this.addUrl(this.props.track.url)
   }
 
   componentWillUnmount() {
@@ -38,16 +38,21 @@ export default class AudioPlayerSub extends Component {
   }
 
   componentDidUpdate(prevProps) {
+    console.info('WORKING WITH MY NEW COMPONENT')
     const {
-      track: { url, title: title },
+      track: { url },
       playing,
       progress,
       updatePlaying,
       topScreen,
       autoplay,
+      updatePlayed,
+      updateProgress,
+      endSong,
     } = this.props
+
     const {
-      track: { url: prevUrl, title: prevTitle },
+      track: { url: prevUrl },
       playing: prevPlaying,
     } = prevProps
 
@@ -56,13 +61,16 @@ export default class AudioPlayerSub extends Component {
     }
 
     if (playing !== prevPlaying) {
-      if (playing && this.player.src) this.player.play()
-      else if (!playing && this.player.src) this.player.pause()
+      if (playing && this.player.src) {
+        this.player.play()
+      } else if (!playing && this.player.src) {
+        this.player.pause()
+      }
     }
 
-    // If song has ended, reset progress and trigger end action
-    if (topScreen && Math.round(progress * 10000) / 10000 === 1) {
-      const { updatePlayed, updateProgress, endSong } = this.props
+    const songHasEnded = topScreen && Math.round(progress * 10000) / 10000 === 1
+
+    if (songHasEnded) {
       this.player.currentTime = 0
       updatePlayed(0)
       updateProgress(0)
@@ -71,36 +79,47 @@ export default class AudioPlayerSub extends Component {
       updatePlaying(false)
     }
 
-    // Pauses audio when navigating to different screen
-    if (prevProps.topScreen && !topScreen && playing) {
+    const navigatingToNewScreen = prevProps.topScreen && !topScreen && playing
+
+    if (navigatingToNewScreen) {
       this.player.pause()
       updatePlaying(false)
     }
 
-    //play audio if set to autoplay
-    if (!prevProps.topScreen && topScreen && autoplay) {
-      this.player.play()
-      updatePlaying(true)
+    const autoplayIsOn = !prevProps.topScreen && topScreen && autoplay
+    
+    if (autoplayIsOn) {
+      const playPromise = this.player.play()
+      playPromise.catch(err => {
+        alert(err)
+        console.error('Problem with the audio player: ', err)
+        this.player.pause()
+        updatePlaying(false)
+      })
     }
   }
 
   addUrl = url => {
-    const {
-      updatePlayable,
-      updatePlaying,
-      autoplay,
-      editor,
-      topScreen,
-    } = this.props
-    updatePlayable(false)
-    let testSound = new Audio(url)
     try {
+      const {
+        updatePlayable,
+        updatePlaying,
+        autoplay,
+        editor,
+        topScreen,
+      } = this.props
+      
+      updatePlayable(false)
+      let testSound = new Audio(url)
+
       testSound.addEventListener('loadedmetadata', () => {
         this.player.src = url
+
         if (autoplay && !editor && topScreen) {
           updatePlaying(true)
           this.player.play()
         }
+
         testSound.removeEventListener('loadedmetadata', () => {})
         updatePlayable(true)
       })
@@ -114,10 +133,12 @@ export default class AudioPlayerSub extends Component {
     const { progress } = this.props
     this.setState({ seeking: true, seekingValue: progress })
   }
+
   // When the user changes the value but hasn't let go of the slider yet
   seekChange = values => {
     this.setState({ seekingValue: values[0] })
   }
+
   // User has let go of the slider
   endSeek = () => {
     this.setState({ seeking: false })
@@ -125,6 +146,7 @@ export default class AudioPlayerSub extends Component {
     const { seekingValue } = this.state
     const { duration, updatePlayed, updateProgress } = this.props
     const newTime = seekingValue * duration
+    
     updateProgress(seekingValue)
     updatePlayed(newTime)
     this.player.currentTime = newTime
@@ -166,7 +188,11 @@ export default class AudioPlayerSub extends Component {
       : hhmmss(played)
     // The value that shows up in the slider
     let sliderValue = this.state.seeking ? this.state.seekingValue : progress
-    if (isNaN(sliderValue)) sliderValue = 0
+
+    if (isNaN(sliderValue)) {
+      sliderValue = 0
+    }
+
     const markerStyle = {
       width: markerSize,
       height: markerSize,
@@ -179,15 +205,18 @@ export default class AudioPlayerSub extends Component {
       borderWidth: 0,
       backgroundColor: markerColor,
     }
+
     if (border) {
       markerStyle.borderWidth = borderSize
       markerStyle.borderColor = borderColor
     }
+
     // Sets shadow size relative to the size of the marker.
     // 3 is completely arbitrary
     if (borderShadow) {
       markerStyle.shadowOffset.height = markerSize / 3
     }
+
     const padding = Math.ceil(markerSize / 2)
     const paddingStyles = { paddingLeft: padding, paddingRight: padding }
     const trackLength = width - padding * 2
@@ -197,7 +226,8 @@ export default class AudioPlayerSub extends Component {
 
     return (
       <View style={(styles.wrapper, paddingStyles)}>
-        <audio ref={ref => (this.player = ref)} />
+        HI :) 
+        <audio ref={ref => (this.player = ref)} autoPlay muted />
         <View style={styles.seekBar}>
           <MultiSlider
             enabledOne
@@ -236,14 +266,21 @@ export default class AudioPlayerSub extends Component {
 function pad(num) {
   return ('0' + num).slice(-2)
 }
+
 function hhmmss(secs) {
   secs = Math.floor(secs)
-  var minutes = Math.floor(secs / 60)
+
+  let minutes = Math.floor(secs / 60)
   secs = secs % 60
-  var hours = Math.floor(minutes / 60)
+
+  const hours = Math.floor(minutes / 60)
   minutes = minutes % 60
-  if (hours != 0) return `${hours}:${pad(minutes)}:${pad(secs)}`
-  else return `${minutes}:${pad(secs)}`
+
+  if (hours != 0) {
+    return `${hours}:${pad(minutes)}:${pad(secs)}`
+  } else {
+    return `${minutes}:${pad(secs)}`
+  }
 }
 
 const styles = StyleSheet.create({

@@ -11,8 +11,6 @@ const ProgressBar = props => {
   const [recentlySeeked, setRecentlySeeked] = useState(false)
   const [endActionRan, setEndActionRan] = useState(false)
 
-  const [currentTrack, updateCurrentTrack] = useState(props.track)
-
   useEffect(() => {
     const { updatePlayed, updateProgress, updatePlaying, autoplay } = props
 
@@ -20,6 +18,7 @@ const ProgressBar = props => {
     updatePlaying(false)
     updateProgress(0)
     updatePlayed(0)
+
     const seek = async () => {
       await TrackPlayer.seekTo(0)
     }
@@ -28,7 +27,7 @@ const ProgressBar = props => {
     if (autoplay) {
       updatePlaying(true)
     }
-  }, [currentTrack, duration])
+  }, [props.track, duration])
 
   useEffect(() => {
     if (
@@ -97,16 +96,14 @@ const ProgressBar = props => {
     markerColor,
     width,
     _fonts,
-  } = props
-  let progress = isNaN(position / duration) ? 0 : position / duration
-
-  const {
     updateDuration,
     updateProgress,
     updatePlayed,
     duration: propDuration,
     played: propPlayed,
   } = props
+
+  const progress = isNaN(position / duration) ? 0 : position / duration
 
   // If track has changed, update the duration
   if (propDuration !== duration) {
@@ -234,6 +231,7 @@ const ProgressBar = props => {
 function pad(num) {
   return ('0' + num).slice(-2)
 }
+
 function hhmmss(secs) {
   secs = Math.floor(secs)
   var minutes = Math.floor(secs / 60)

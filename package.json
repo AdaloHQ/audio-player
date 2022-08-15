@@ -1,6 +1,6 @@
 {
   "name": "@adalo/audio-player",
-  "version": "1.4.25",
+  "version": "1.4.30",
   "license": "MIT",
   "author": "Adalo",
   "main": "index.js",
@@ -30,7 +30,7 @@
     "androidInstallScript": "./scripts/install_android.sh"
   },
   "devDependencies": {
-    "@adalo/cli": "^0.0.39",
+    "@adalo/cli": "0.0.55",
     "@babel/core": "^7.1.2",
     "@babel/plugin-proposal-class-properties": "^7.1.0",
     "@babel/preset-env": "^7.0.0",
@@ -56,7 +56,7 @@
     "moment": "^2.26.0",
     "react-native-swift": "^1.2.3",
     "react-native-track-player": "^2.1.2",
-    "react-native-vector-icons": "^6.6.0",
+    "react-native-vector-icons": "6.6.0",
     "uuid": "^3.0.0"
   }
 }
