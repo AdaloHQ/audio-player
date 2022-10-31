@@ -1,6 +1,6 @@
 {
   "name": "@adalo/audio-player",
-  "version": "1.4.26",
+  "version": "1.4.32",
   "license": "MIT",
   "author": "Adalo",
   "main": "index.js",
