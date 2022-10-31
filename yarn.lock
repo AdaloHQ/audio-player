@@ -987,10 +987,10 @@
     prop-types "^15.7.2"
     react-is "^16.8.0"
 
-"@protonapp/react-native-material-ui@^2.0.4":
-  version "2.0.4"
-  resolved "https://registry.yarnpkg.com/@protonapp/react-native-material-ui/-/react-native-material-ui-2.0.4.tgz#812b7474b709a968b8de9e5acf91cf1f1093f47a"
-  integrity sha512-y/h6emJmCpwg2tBaS+i2HPzRP1TjMr2KKrS1O/FFeG2D4hUHJHSrLUzdGS7hmEL7pzPMe54mdl7Hx4AdIS8iQw==
+"@protonapp/react-native-material-ui@^2.0.7":
+  version "2.0.7"
+  resolved "https://registry.yarnpkg.com/@protonapp/react-native-material-ui/-/react-native-material-ui-2.0.7.tgz#2edf2b4792d2d119773381a07931716ac7fa674b"
+  integrity sha512-9ifSLFvmUb6EM5ph+/MsTQmq239S87szVoKpFfQ7O8MKdkRRzaxEY1T0sVStgWWPWc9VuCBBepgNWBNcfnaThg==
   dependencies:
     color "3.1.0"
     hoist-non-react-statics "^2.5.5"

@@ -51,7 +51,7 @@
   },
   "dependencies": {
     "@material-ui/core": "^4.10.0",
-    "@protonapp/react-native-material-ui": "^2.0.4",
+    "@protonapp/react-native-material-ui": "^2.0.7",
     "@ptomasroos/react-native-multi-slider": "^2.2.2",
     "moment": "^2.26.0",
     "react-native-swift": "^1.2.3",
