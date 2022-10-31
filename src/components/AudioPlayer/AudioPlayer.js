@@ -1,5 +1,9 @@
 import React, { Component } from 'react'
-import TrackPlayer, { State, Capability } from 'react-native-track-player'
+import TrackPlayer, {
+  State,
+  Capability,
+  AppKilledPlaybackBehavior,
+} from 'react-native-track-player'
 import { v4 as uuid } from 'uuid'
 import ProgressBar from './ProgressBar'
 import { Text } from 'react-native'
@@ -23,7 +27,9 @@ class AudioPlayerSub extends Component {
 
     TrackPlayer.updateOptions({
       // Whether the player should stop running when the app is closed on Android
-      stopWithApp: true,
+      android: {
+        appKilledPlaybackBehavior: AppKilledPlaybackBehavior.ContinuePlayback,
+      },
       // An array of media controls capabilities
       capabilities: [Capability.Play, Capability.Pause, Capability.SeekTo],
 
