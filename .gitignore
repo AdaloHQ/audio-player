@@ -6,8 +6,6 @@ yarn-debug.log*
 yarn-error.log*
 *.rdb
 
-dist
-
 # Runtime data
 pids
 *.pid
@@ -65,7 +63,7 @@ dump.rdb
 .idea
 
 # Dist
-dist
+dist/
 
 # Local testing files
 .watchmanconfig
