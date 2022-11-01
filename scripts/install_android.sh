@@ -5,11 +5,8 @@ set -x
 dir=$(dirname "${0}")
 
 sed -i.bak '/com.android.tools.build:gradle/a\
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.5.30"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
 ' android/build.gradle
-
-sed -i.bak '$a\ org.gradle.jvm.version=11' android/gradle.properties
-sed -i.bak '$a\ org.gradle.libraryelements="jar"' android/gradle.properties
 
 sed -i.bak '/defaultConfig {/ a\
       multiDexEnabled true\
