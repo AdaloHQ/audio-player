@@ -8,6 +8,14 @@ sed -i.bak '/com.android.tools.build:gradle/a\
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.5.30"
 ' android/build.gradle
 
+sed -i.bak 'ext {/a\
+        org.gradle.jvm.version = 11
+' android/build.gradle
+
+sed -i.bak 'ext {/a\
+        org.gradle.libraryelements = jar
+' android/build.gradle
+
 sed -i.bak '/defaultConfig {/ a\
       multiDexEnabled true\
     ' android/app/build.gradle
