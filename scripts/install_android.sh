@@ -4,10 +4,6 @@ set -x
 
 dir=$(dirname "${0}")
 
-sed -i.bak '/com.android.tools.build:gradle/a\
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-' android/build.gradle
-
 sed -i.bak '/defaultConfig {/ a\
       multiDexEnabled true\
     ' android/app/build.gradle
