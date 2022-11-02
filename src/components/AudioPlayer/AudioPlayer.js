@@ -28,7 +28,8 @@ class AudioPlayerSub extends Component {
     TrackPlayer.updateOptions({
       // Whether the player should stop running when the app is closed on Android
       android: {
-        appKilledPlaybackBehavior: AppKilledPlaybackBehavior.ContinuePlayback,
+        appKilledPlaybackBehavior:
+          AppKilledPlaybackBehavior.StopPlaybackAndRemoveNotification,
       },
       // An array of media controls capabilities
       capabilities: [Capability.Play, Capability.Pause, Capability.SeekTo],
