@@ -198,6 +198,16 @@ class AudioPlayer extends Component {
       keepPlaying,
     } = this.props
     const { width, track } = this.state
+
+    // If the track URL isn't available, the audio player will crash native apps.
+    // Display a simple message notifying the user of the problem, and prevent the
+    // player from loading and crashing the app.
+    // The URL is usually unavailable in the editor, which doesn't cause any harm, so
+    // allow the audio player to load in that context.
+    if (!editor && !track?.url) {
+      return <Text>Unable to load audio player, audio track URL unavailable.</Text>
+    }
+
     const artworkWidth = (width * artwork.artworkPercent) / 100
     const dynamicStyles = {
       artwork: {
