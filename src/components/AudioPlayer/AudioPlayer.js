@@ -110,8 +110,6 @@ class AudioPlayerSub extends Component {
         artwork: track.artwork,
       })
 
-      await TrackPlayer.skipToNext()
-
       // prevents previous screen's audio playing on new screens' audio player
       if (keepPlaying) {
         await TrackPlayer.pause()
