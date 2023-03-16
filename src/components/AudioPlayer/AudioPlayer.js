@@ -101,6 +101,7 @@ class AudioPlayerSub extends Component {
       this.setState({ switching: true })
 
       const id = uuid()
+
       await TrackPlayer.reset()
       await TrackPlayer.add({
         id,
@@ -110,7 +111,9 @@ class AudioPlayerSub extends Component {
         artwork: track.artwork,
       })
 
-      await TrackPlayer.skipToNext()
+      if (Platform.OS === 'android') {
+        await TrackPlayer.skipToNext()
+      }
 
       // prevents previous screen's audio playing on new screens' audio player
       if (keepPlaying) {
