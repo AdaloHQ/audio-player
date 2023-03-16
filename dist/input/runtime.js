@@ -1,1 +1,1 @@
-export { AudioPlayer } from '../../index.js'
+export {    AudioPlayer as AudioPlayer,  } from '../../index.js'
