@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import TrackPlayer, { State, Capability } from 'react-native-track-player'
+import TrackPlayer, { AppKilledPlaybackBehavior, State, Capability } from 'react-native-track-player'
 import { v4 as uuid } from 'uuid'
 import ProgressBar from './ProgressBar'
 import { Text } from 'react-native'
@@ -16,6 +16,20 @@ class AudioPlayerSub extends Component {
     await this.setup()
   }
 
+  /**
+   * 
+   * @returns {Promise<import('react-native-track-player').PlaybackState>} The current state of the player
+   */
+  getPlaybackState = async () => {
+    const playbackState = await TrackPlayer.getPlaybackState()
+
+    if (playbackState.error) {
+      console.error('playbackState', playbackState.error)
+    }
+
+    return playbackState.state
+  }
+
   setup = async () => {
     await TrackPlayer.setupPlayer()
 
@@ -23,7 +37,9 @@ class AudioPlayerSub extends Component {
 
     TrackPlayer.updateOptions({
       // Whether the player should stop running when the app is closed on Android
-      stopWithApp: true,
+      android: {
+        appKilledPlaybackBehavior: AppKilledPlaybackBehavior.ContinuePlayback
+      },
       // An array of media controls capabilities
       capabilities: [Capability.Play, Capability.Pause, Capability.SeekTo],
 
@@ -33,7 +49,7 @@ class AudioPlayerSub extends Component {
 
     const { track, playing, autoplay, updatePlaying } = this.props
 
-    if ((await TrackPlayer.getState()) === State.Paused && autoplay) {
+    if ((await this.getPlaybackState()) === State.Paused && autoplay) {
       await TrackPlayer.reset()
     }
 
@@ -49,9 +65,9 @@ class AudioPlayerSub extends Component {
     })
 
     // only play when track is ready
-    let isReady = (await TrackPlayer.getState()) === State.Ready
+    let isReady = (await this.getPlaybackState()) === State.Ready
     while (!isReady) {
-      isReady = (await TrackPlayer.getState()) === State.Ready
+      isReady = (await this.getPlaybackState()) === State.Ready
     }
 
     // If player was already set to play or set to autoplay, start playing
@@ -61,7 +77,7 @@ class AudioPlayerSub extends Component {
     }
 
     // ensure play/pause button matches playing prop
-    let state = await TrackPlayer.getState()
+    let state = await this.getPlaybackState()
     if (state === State.Playing && !playing) {
       updatePlaying(true)
     } else if (state === State.Paused && playing) {
@@ -122,9 +138,9 @@ class AudioPlayerSub extends Component {
       }
 
       //check that new track is ready before playing
-      let isReady = (await TrackPlayer.getState()) === State.Ready
+      let isReady = (await this.getPlaybackState()) === State.Ready
       while (!isReady) {
-        isReady = (await TrackPlayer.getState()) === State.Ready
+        isReady = (await this.getPlaybackState()) === State.Ready
       }
 
       // reset prevProgress if already
@@ -150,7 +166,7 @@ class AudioPlayerSub extends Component {
     }
 
     // ensure play/pause button matches playing prop
-    let playerState = await TrackPlayer.getState()
+    let playerState = await this.getPlaybackState()
     if (playerState === State.Playing && !playing) {
       updatePlaying(true)
     } else if (playerState === State.Paused && playing) {
