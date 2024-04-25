@@ -345,7 +345,7 @@ class AudioPlayer extends Component {
                 }
                 key={`key.${JSON.stringify(track)}`}
               />
-              <ControlScheme {...buttonConfig} {...this.state} />
+              <ControlScheme editor={editor} {...buttonConfig} {...this.state} />
             </View>
           )}
         </View>
@@ -396,7 +396,7 @@ class AudioPlayer extends Component {
               {subtitle != '' ? (
                 <Text style={dynamicStyles.subtitle}>{subtitle}</Text>
               ) : null}
-              <ControlScheme {...buttonConfig} {...this.state} />
+              <ControlScheme editor={editor} {...buttonConfig} {...this.state} />
             </View>
           )}
         </View>
@@ -419,7 +419,7 @@ class AudioPlayer extends Component {
               {subtitle != '' ? (
                 <Text style={dynamicStyles.subtitle}>{subtitle}</Text>
               ) : null}
-              <ControlScheme {...buttonConfig} {...this.state} />
+              <ControlScheme editor={editor} {...buttonConfig} {...this.state} />
               <AudioPlayerSub
                 {...progressBar}
                 played={this.state.played}

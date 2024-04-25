@@ -4,9 +4,15 @@ import ControlIcon from './ControlIcon'
 
 class ControlScheme extends Component {
   renderPlayPause = () => {
-    const { playing, pauseButton, playButton, durationSet = false } = this.props
+    const {
+      playing,
+      pauseButton,
+      playButton,
+      editor = false,
+      durationSet = false
+    } = this.props
 
-    if (durationSet === false) {
+    if (durationSet === false && editor === false) {
       const { color } = playButton
 
       return (
@@ -29,7 +35,6 @@ class ControlScheme extends Component {
       backButton,
       leftButton,
       rightButton,
-      durationSet = false,
     } = this.props
 
     return (
