@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import TrackPlayer, { AppKilledPlaybackBehavior, State, Capability } from 'react-native-track-player'
 import { v4 as uuid } from 'uuid'
 import ProgressBar from './ProgressBar'
-import { Text } from 'react-native'
+
 class AudioPlayerSub extends Component {
   constructor(props) {
     super(props)
@@ -187,9 +187,14 @@ class AudioPlayerSub extends Component {
     if (active && !nextProps.active) {
       // pause track if needed
       if (playing && !nextProps.keepPlaying) {
-        TrackPlayer.pause()
-        updatePlaying(false)
-        this.setState({ startSwitch: true })
+        this.setState({ startSwitch: true }, () => {
+          TrackPlayer.pause().then(() => {
+            updatePlaying(false)
+          }).catch(err => {
+            console.error(err)
+          })
+        })
+        
       }
       updatePrevProgress(progress)
     }
