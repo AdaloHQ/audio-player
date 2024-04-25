@@ -22,6 +22,7 @@ class AudioPlayer extends Component {
       prevProgress: 0,
       // Duration of song
       duration: 0,
+      durationSet: false,
       // Time played of song (in seconds)
       played: 0,
       // Info for the specific song currently playing.
@@ -146,7 +147,7 @@ class AudioPlayer extends Component {
   }
 
   updateDuration = duration => {
-    this.setState({ duration })
+    this.setState({ duration, durationSet: duration !== 0 })
   }
   updateProgress = newProgress => {
     this.setState({ progress: newProgress })
@@ -344,7 +345,7 @@ class AudioPlayer extends Component {
                 }
                 key={`key.${JSON.stringify(track)}`}
               />
-              <ControlScheme {...buttonConfig} {...this.state} />
+              <ControlScheme editor={editor} {...buttonConfig} {...this.state} />
             </View>
           )}
         </View>
@@ -395,7 +396,7 @@ class AudioPlayer extends Component {
               {subtitle != '' ? (
                 <Text style={dynamicStyles.subtitle}>{subtitle}</Text>
               ) : null}
-              <ControlScheme {...buttonConfig} {...this.state} />
+              <ControlScheme editor={editor} {...buttonConfig} {...this.state} />
             </View>
           )}
         </View>
@@ -418,7 +419,7 @@ class AudioPlayer extends Component {
               {subtitle != '' ? (
                 <Text style={dynamicStyles.subtitle}>{subtitle}</Text>
               ) : null}
-              <ControlScheme {...buttonConfig} {...this.state} />
+              <ControlScheme editor={editor} {...buttonConfig} {...this.state} />
               <AudioPlayerSub
                 {...progressBar}
                 played={this.state.played}

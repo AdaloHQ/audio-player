@@ -1,5 +1,4 @@
 import React, { Component } from 'react'
-import { View } from 'react-native'
 import { IconToggle } from '@protonapp/react-native-material-ui'
 
 class ControlIcon extends Component {

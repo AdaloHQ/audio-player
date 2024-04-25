@@ -1,27 +1,47 @@
 import React, { Component } from 'react'
-import { Text, View, Image, StyleSheet } from 'react-native'
+import { View, StyleSheet, ActivityIndicator } from 'react-native'
 import ControlIcon from './ControlIcon'
 
 class ControlScheme extends Component {
+  renderPlayPause = () => {
+    const {
+      playing,
+      pauseButton,
+      playButton,
+      editor = false,
+      durationSet = false
+    } = this.props
+
+    if (durationSet === false && editor === false) {
+      const { color } = playButton
+
+      return (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="small" color={color} />
+        </View>
+      )
+    }
+
+    if (playing) {
+      return <ControlIcon {...pauseButton} />
+    }
+
+    return <ControlIcon {...playButton} />
+  }
+
   render() {
     const {
-      playButton,
-      pauseButton,
       forwardButton,
       backButton,
       leftButton,
       rightButton,
-      playing,
     } = this.props
+
     return (
       <View style={styles.icons}>
         <ControlIcon {...leftButton} />
         <ControlIcon {...backButton} />
-        {playing ? (
-          <ControlIcon {...pauseButton} />
-        ) : (
-          <ControlIcon {...playButton} />
-        )}
+        {this.renderPlayPause()}
         <ControlIcon {...forwardButton} />
         <ControlIcon {...rightButton} />
       </View>
@@ -32,6 +52,12 @@ class ControlScheme extends Component {
 const styles = StyleSheet.create({
   icons: {
     flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingContainer: {
+    width: 56,
+    height: 56,
     justifyContent: 'center',
     alignItems: 'center',
   },
