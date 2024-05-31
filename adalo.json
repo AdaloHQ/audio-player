@@ -10,5 +10,5 @@
     }
   ],
   "iosInstallScript": "./scripts/install_ios.sh",
-  "androidInstallScript": "./scripts/install_android.sh"
+  "androidInstallScript": "./scripts/installAndroid.ts"
 }
