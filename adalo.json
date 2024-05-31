@@ -9,6 +9,6 @@
       "manifest": "./src/components/AudioPlayer/manifest.json"
     }
   ],
-  "iosInstallScript": "./scripts/install_ios.sh",
+  "iosInstallScript": "./scripts/installIOS.sh",
   "androidInstallScript": "./scripts/installAndroid.ts"
 }
