@@ -1,8 +1,8 @@
-import * as path from 'https://deno.land/std@0.102.0/path/mod.ts'
+import { join } from 'https://deno.land/std/path/mod.ts'
 import { backupFile, updateBackgroundControl } from './commons.ts'
 
 const projectPath = Deno.env.get('ADALO_APP_PROJECT_PATH') as string
-const gradleFilePath = path.join(projectPath, 'android/app/build.gradle')
+const gradleFilePath = join(projectPath, 'android/app/build.gradle')
 const gradleFileContent = await Deno.readTextFile(gradleFilePath)
 
 if (!gradleFileContent.includes('multiDexEnabled true')) {

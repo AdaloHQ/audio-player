@@ -1,3 +1,4 @@
+import { join } from 'https://deno.land/std/path/mod.ts'
 import { updateBackgroundControl } from './commons.ts'
 
 const projectPath = Deno.env.get('ADALO_APP_PROJECT_PATH') as string
@@ -24,7 +25,7 @@ const runPlutilCommand = async (projectName: string, args: string[]) => {
 
 Deno.chdir(projectPath)
 
-const infoPlistPath = `ios/${projectName}/Info.plist`
+const infoPlistPath = join(projectPath, `ios/${projectName}/Info.plist`)
 const infoPlistContent = await Deno.readTextFile(infoPlistPath)
 
 if (infoPlistContent.includes('<string>audio')) {
