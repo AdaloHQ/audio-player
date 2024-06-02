@@ -1,4 +1,4 @@
-import { join } from 'https://deno.land/std/path/mod.ts'
+import { join } from 'https://deno.land/std@0.224.0/path/mod.ts'
 
 export const backupFile = (filePath: string) =>
   Deno.copyFile(filePath, `${filePath}.bak`)
