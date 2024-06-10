@@ -1,6 +1,6 @@
 {
   "name": "@adalo/audio-player",
-  "version": "2.0.3",
+  "version": "2.0.5",
   "license": "MIT",
   "author": "Adalo",
   "main": "index.js",
@@ -26,8 +26,8 @@
         "manifest": "./src/components/AudioPlayer/manifest.json"
       }
     ],
-    "iosInstallScript": "./scripts/install_ios.sh",
-    "androidInstallScript": "./scripts/install_android.sh"
+    "iosInstallScript": "./scripts/installIos.ts",
+  "androidInstallScript": "./scripts/installAndroid.ts"
   },
   "devDependencies": {
     "@adalo/cli": "^0.0.39",
