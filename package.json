@@ -1,6 +1,6 @@
 {
   "name": "@adalo/audio-player",
-  "version": "2.0.5",
+  "version": "2.0.6",
   "license": "MIT",
   "author": "Adalo",
   "main": "index.js",
@@ -27,7 +27,7 @@
       }
     ],
     "iosInstallScript": "./scripts/installIos.ts",
-  "androidInstallScript": "./scripts/installAndroid.ts"
+    "androidInstallScript": "./scripts/installAndroid.ts"
   },
   "devDependencies": {
     "@adalo/cli": "1.0.2",
@@ -51,7 +51,7 @@
   },
   "dependencies": {
     "@material-ui/core": "^4.10.0",
-    "@protonapp/react-native-material-ui": "^2.0.4",
+    "@protonapp/react-native-material-ui": "https://github.com/AdaloHQ/react-native-material-ui.git#upgrade-rn",
     "@ptomasroos/react-native-multi-slider": "^2.2.2",
     "moment": "^2.26.0",
     "react-native-swift": "^1.2.3",
