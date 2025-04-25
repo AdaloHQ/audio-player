@@ -16,7 +16,11 @@
     "deploy": "adalo deploy",
     "deploy:local": "REGISTRY_URL=http://localhost:8000 yarn run deploy"
   },
-  "peerDependencies": {},
+  "peerDependencies": {
+    "react": ">=18.2.0",
+    "react-dom": ">=18.2.0",
+    "react-native-webview": ">=13.6.4"
+  },
   "adalo": {
     "logo": "./logo.png",
     "displayName": "Audio Player",
