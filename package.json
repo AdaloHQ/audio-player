@@ -1,6 +1,6 @@
 {
   "name": "@adalo/audio-player",
-  "version": "2.0.6",
+  "version": "2.1.0",
   "license": "MIT",
   "author": "Adalo",
   "main": "index.js",
@@ -34,7 +34,7 @@
     "androidInstallScript": "./scripts/installAndroid.ts"
   },
   "devDependencies": {
-    "@adalo/cli": "1.0.2",
+    "@adalo/cli": "^1.0.6",
     "@babel/core": "^7.1.2",
     "@babel/plugin-proposal-class-properties": "^7.1.0",
     "@babel/preset-env": "^7.0.0",
