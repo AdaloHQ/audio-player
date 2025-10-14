@@ -252,6 +252,7 @@
           "name": "playIconName",
           "displayName": "Play Button Icon",
           "type": "icon",
+          "customIcons": true,
           "default": "play-arrow"
         },
         {
@@ -274,6 +275,7 @@
           "name": "pauseIconName",
           "displayName": "Pause Button Icon",
           "type": "icon",
+          "customIcons": true,
           "default": "pause"
         },
         {
@@ -350,6 +352,7 @@
           "name": "forwardIconName",
           "displayName": "Forward Button Icon",
           "type": "icon",
+          "customIcons": true,
           "default": "forward-30",
           "enabled": {
             "enableForward": true
@@ -412,6 +415,7 @@
           "name": "backIconName",
           "displayName": "Back Button Icon",
           "type": "icon",
+          "customIcons": true,
           "default": "replay-10",
           "enabled": {
             "enableBack": true
@@ -466,6 +470,7 @@
           "name": "leftIconName",
           "displayName": "Left Button Icon",
           "type": "icon",
+          "customIcons": true,
           "default": "thumb-up",
           "enabled": {
             "enableLeft": true
@@ -498,6 +503,7 @@
           "name": "rightIconName",
           "displayName": "Right Button Icon",
           "type": "icon",
+          "customIcons": true,
           "default": "thumb-down",
           "enabled": {
             "enableRight": true

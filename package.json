@@ -1,6 +1,6 @@
 {
   "name": "@adalo/audio-player",
-  "version": "2.0.5",
+  "version": "2.0.7",
   "license": "MIT",
   "author": "Adalo",
   "main": "index.js",
@@ -30,11 +30,12 @@
   "androidInstallScript": "./scripts/installAndroid.ts"
   },
   "devDependencies": {
-    "@adalo/cli": "^0.0.39",
+    "@adalo/cli": "^1.0.6",
     "@babel/core": "^7.1.2",
     "@babel/plugin-proposal-class-properties": "^7.1.0",
     "@babel/preset-env": "^7.0.0",
     "@babel/preset-react": "^7.0.0",
+    "babel-loader": "^8.4.1",
     "eslint": "^5.16.0",
     "eslint-config-airbnb": "^17.1.1",
     "eslint-config-prettier": "6.0.0",
@@ -51,12 +52,12 @@
   },
   "dependencies": {
     "@material-ui/core": "^4.10.0",
-    "@protonapp/react-native-material-ui": "^2.0.4",
+    "@protonapp/react-native-material-ui": "^2.0.9",
     "@ptomasroos/react-native-multi-slider": "^2.2.2",
     "moment": "^2.26.0",
     "react-native-swift": "^1.2.3",
     "react-native-track-player": "4.1.1",
-    "react-native-vector-icons": "^6.6.0",
+    "react-native-vector-icons": "^9.2.0",
     "uuid": "^3.0.0"
   }
 }
