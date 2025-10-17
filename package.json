@@ -1,6 +1,6 @@
 {
   "name": "@adalo/audio-player",
-  "version": "2.1.0",
+  "version": "2.0.8",
   "license": "MIT",
   "author": "Adalo",
   "main": "index.js",
@@ -39,6 +39,7 @@
     "@babel/plugin-proposal-class-properties": "^7.1.0",
     "@babel/preset-env": "^7.0.0",
     "@babel/preset-react": "^7.0.0",
+    "babel-loader": "^8.4.1",
     "eslint": "^5.16.0",
     "eslint-config-airbnb": "^17.1.1",
     "eslint-config-prettier": "6.0.0",
