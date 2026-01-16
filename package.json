@@ -1,6 +1,6 @@
 {
   "name": "@adalo/audio-player",
-  "version": "2.0.7",
+  "version": "2.0.8",
   "license": "MIT",
   "author": "Adalo",
   "main": "index.js",
@@ -16,7 +16,11 @@
     "deploy": "adalo deploy",
     "deploy:local": "REGISTRY_URL=http://localhost:8000 yarn run deploy"
   },
-  "peerDependencies": {},
+  "peerDependencies": {
+    "react": ">=18.2.0",
+    "react-dom": ">=18.2.0",
+    "react-native-webview": ">=13.6.4"
+  },
   "adalo": {
     "logo": "./logo.png",
     "displayName": "Audio Player",
@@ -27,7 +31,7 @@
       }
     ],
     "iosInstallScript": "./scripts/installIos.ts",
-  "androidInstallScript": "./scripts/installAndroid.ts"
+    "androidInstallScript": "./scripts/installAndroid.ts"
   },
   "devDependencies": {
     "@adalo/cli": "^1.0.6",
@@ -45,19 +49,19 @@
     "eslint-plugin-react": "^7.14.3",
     "eslint-plugin-react-hooks": "^1.7.0",
     "prettier": "^1.19.1",
-    "react": "^16.12.0",
-    "react-art": "^16.3.2",
-    "react-dom": "^16.12.0",
+    "react": "18.2.0",
+    "react-art": "18.2.0",
+    "react-dom": "18.2.0",
     "react-native-web": "AdaloHQ/react-native-web"
   },
   "dependencies": {
     "@material-ui/core": "^4.10.0",
-    "@protonapp/react-native-material-ui": "^2.0.9",
+    "@protonapp/react-native-material-ui": "https://github.com/AdaloHQ/react-native-material-ui.git#upgrade-rn",
     "@ptomasroos/react-native-multi-slider": "^2.2.2",
     "moment": "^2.26.0",
     "react-native-swift": "^1.2.3",
-    "react-native-track-player": "4.1.1",
-    "react-native-vector-icons": "^9.2.0",
+    "react-native-track-player": "github:puckey/react-native-track-player#feature/update-react-native",
+    "react-native-vector-icons": "^10.2.0",
     "uuid": "^3.0.0"
   }
 }
