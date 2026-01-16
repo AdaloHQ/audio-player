@@ -16,8 +16,20 @@ class AudioPlayerSub extends Component {
     await this.setup()
   }
 
+  componentWillUnmount() {
+    const { playing, keepPlaying, updatePlaying } = this.props
+
+    if (playing && !keepPlaying) {
+      TrackPlayer.pause().then(() => {
+        updatePlaying(false)
+      }).catch(err => {
+        console.error('Error pausing track on unmount:', err)
+      })
+    }
+  }
+
   /**
-   * 
+   *
    * @returns {Promise<import('react-native-track-player').PlaybackState>} The current state of the player
    */
   getPlaybackState = async () => {
@@ -172,34 +184,6 @@ class AudioPlayerSub extends Component {
     } else if (playerState === State.Paused && playing) {
       updatePlaying(false)
     }
-  }
-
-  shouldComponentUpdate(nextProps) {
-    const {
-      active,
-      progress,
-      playing,
-      updatePrevProgress,
-      updatePlaying,
-    } = this.props
-
-    // when changing screens
-    if (active && !nextProps.active) {
-      // pause track if needed
-      if (playing && !nextProps.keepPlaying) {
-        this.setState({ startSwitch: true }, () => {
-          TrackPlayer.pause().then(() => {
-            updatePlaying(false)
-          }).catch(err => {
-            console.error(err)
-          })
-        })
-        
-      }
-      updatePrevProgress(progress)
-    }
-
-    return true
   }
 
   // When props change
