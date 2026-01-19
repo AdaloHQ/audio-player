@@ -1,5 +1,9 @@
 import React, { Component } from 'react'
-import TrackPlayer, { AppKilledPlaybackBehavior, State, Capability } from 'react-native-track-player'
+import TrackPlayer, {
+  AppKilledPlaybackBehavior,
+  State,
+  Capability,
+} from 'react-native-track-player'
 import { v4 as uuid } from 'uuid'
 import ProgressBar from './ProgressBar'
 
@@ -16,8 +20,22 @@ class AudioPlayerSub extends Component {
     await this.setup()
   }
 
+  componentWillUnmount() {
+    const { playing, keepPlaying, updatePlaying } = this.props
+
+    if (playing && !keepPlaying) {
+      TrackPlayer.pause()
+        .then(() => {
+          updatePlaying(false)
+        })
+        .catch(err => {
+          console.error('Error pausing track on unmount:', err)
+        })
+    }
+  }
+
   /**
-   * 
+   *
    * @returns {Promise<import('react-native-track-player').PlaybackState>} The current state of the player
    */
   getPlaybackState = async () => {
@@ -38,7 +56,7 @@ class AudioPlayerSub extends Component {
     TrackPlayer.updateOptions({
       // Whether the player should stop running when the app is closed on Android
       android: {
-        appKilledPlaybackBehavior: AppKilledPlaybackBehavior.ContinuePlayback
+        appKilledPlaybackBehavior: AppKilledPlaybackBehavior.ContinuePlayback,
       },
       // An array of media controls capabilities
       capabilities: [Capability.Play, Capability.Pause, Capability.SeekTo],
@@ -172,34 +190,6 @@ class AudioPlayerSub extends Component {
     } else if (playerState === State.Paused && playing) {
       updatePlaying(false)
     }
-  }
-
-  shouldComponentUpdate(nextProps) {
-    const {
-      active,
-      progress,
-      playing,
-      updatePrevProgress,
-      updatePlaying,
-    } = this.props
-
-    // when changing screens
-    if (active && !nextProps.active) {
-      // pause track if needed
-      if (playing && !nextProps.keepPlaying) {
-        this.setState({ startSwitch: true }, () => {
-          TrackPlayer.pause().then(() => {
-            updatePlaying(false)
-          }).catch(err => {
-            console.error(err)
-          })
-        })
-        
-      }
-      updatePrevProgress(progress)
-    }
-
-    return true
   }
 
   // When props change
