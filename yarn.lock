@@ -1067,8 +1067,8 @@
   integrity sha512-+1VkjdD0QBLPodGrJUeqarH8VAIvQODIbwh9XpP5Syisf7YoQgsJKPNFoqqLQlu+VQ/tVSshMR6loPMn8U+dPg==
 
 "@protonapp/react-native-material-ui@https://github.com/AdaloHQ/react-native-material-ui.git#upgrade-rn":
-  version "2.0.10"
-  resolved "https://github.com/AdaloHQ/react-native-material-ui.git#a08a40d24aab5b5b8122f680d9aecc81241d4fba"
+  version "2.0.11"
+  resolved "https://github.com/AdaloHQ/react-native-material-ui.git#8d23624e17bdb82baedd516c4c1adf2cc2bdbb88"
   dependencies:
     color "3.1.0"
     hoist-non-react-statics "^2.5.5"
