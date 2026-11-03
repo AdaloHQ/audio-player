@@ -13,21 +13,15 @@ const ProgressBar = props => {
 
   const [currentTrack, updateCurrentTrack] = useState(props.track)
 
+  // Only resets the progress UI. This runs before the new track is loaded, so
+  // seeking or playing here would act on the previous track and replay it.
+  // AudioPlayerSub starts playback (and autoplay) once the new track is ready.
   useEffect(() => {
-    const { updatePlayed, updateProgress, updatePlaying, autoplay } = props
+    const { updatePlayed, updateProgress } = props
 
     updateDuration(duration)
-    updatePlaying(false)
     updateProgress(0)
     updatePlayed(0)
-    const seek = async () => {
-      await TrackPlayer.seekTo(0)
-    }
-    seek()
-
-    if (autoplay) {
-      updatePlaying(true)
-    }
   }, [currentTrack, duration])
 
   useEffect(() => {

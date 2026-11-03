@@ -7,6 +7,14 @@ import TrackPlayer, {
 import { v4 as uuid } from 'uuid'
 import ProgressBar from './ProgressBar'
 
+// How long to wait for a newly loaded track before giving up
+const TRACK_READY_TIMEOUT_MS = 15000
+const TRACK_READY_POLL_MS = 100
+
+const isAlreadyInitializedError = err =>
+  err?.code === 'player_already_initialized' ||
+  /already been initialized/i.test(err?.message || '')
+
 class AudioPlayerSub extends Component {
   constructor(props) {
     super(props)
@@ -21,6 +29,9 @@ class AudioPlayerSub extends Component {
   }
 
   componentWillUnmount() {
+    // Stops any pending load from starting playback after this instance is gone
+    this.unmounted = true
+
     const { playing, keepPlaying, updatePlaying } = this.props
 
     if (playing && !keepPlaying) {
@@ -49,58 +60,104 @@ class AudioPlayerSub extends Component {
   }
 
   setup = async () => {
-    await TrackPlayer.setupPlayer()
+    // Set before the first await so checkTrack (run on every prop update)
+    // doesn't load the same track in parallel while this one is in flight
+    this.loadingTrack = true
 
-    TrackPlayer.registerPlaybackService(() => require('./service'))
+    try {
+      let initialized = true
 
-    TrackPlayer.updateOptions({
-      // Whether the player should stop running when the app is closed on Android
-      android: {
-        appKilledPlaybackBehavior: AppKilledPlaybackBehavior.ContinuePlayback,
-      },
-      // An array of media controls capabilities
-      capabilities: [Capability.Play, Capability.Pause, Capability.SeekTo],
+      try {
+        await TrackPlayer.setupPlayer()
+      } catch (err) {
+        // The player is a singleton, so it is already set up when another
+        // Audio Player mounted earlier or when this one remounts because its
+        // URL changed. Keep going so the new track still gets loaded.
+        if (!isAlreadyInitializedError(err)) throw err
+        initialized = false
+      }
 
-      // An array of capabilities that will show up when the notification is in the compact form on Android
-      compactCapabilities: [Capability.Play, Capability.Pause],
-    })
+      if (initialized) {
+        TrackPlayer.registerPlaybackService(() => require('./service'))
 
-    const { track, playing, autoplay, updatePlaying } = this.props
+        TrackPlayer.updateOptions({
+          // Whether the player should stop running when the app is closed on Android
+          android: {
+            appKilledPlaybackBehavior:
+              AppKilledPlaybackBehavior.ContinuePlayback,
+          },
+          // An array of media controls capabilities
+          capabilities: [Capability.Play, Capability.Pause, Capability.SeekTo],
 
-    if ((await this.getPlaybackState()) === State.Paused && autoplay) {
-      await TrackPlayer.reset()
+          // An array of capabilities that will show up when the notification is in the compact form on Android
+          compactCapabilities: [Capability.Play, Capability.Pause],
+        })
+      }
+
+      const { topScreen, autoplay, updatePlaying } = this.props
+
+      // A player on a screen below the top one must not replace the track
+      // that is playing; checkTrack loads it once its screen is back on top
+      if (topScreen === false) return
+
+      if (!(await this.loadTrack())) return
+
+      // This instance is new for every track, so start from a clean
+      // play/pause state and only autoplay once the new track is ready
+      if (autoplay) {
+        await TrackPlayer.play()
+        updatePlaying(true)
+      } else {
+        updatePlaying(false)
+      }
+    } finally {
+      this.loadingTrack = false
     }
+  }
 
-    // Adds the specified song to the track player to be ready to play
-    const id = uuid()
+  // Replaces the player's current track with the one in props and waits for
+  // it to be ready. Resolves to false if it failed or timed out.
+  loadTrack = async () => {
+    const { track } = this.props
 
-    await TrackPlayer.add({
-      id,
+    // Paused first so load() neither resumes the previous track nor starts
+    // the new one before the caller decides whether it should play
+    await TrackPlayer.pause()
+    await TrackPlayer.load({
+      id: uuid(),
       url: track.url,
       title: track.title,
       artist: track.subtitle,
       artwork: track.artwork,
     })
 
-    // only play when track is ready
-    let isReady = (await this.getPlaybackState()) === State.Ready
-    while (!isReady) {
-      isReady = (await this.getPlaybackState()) === State.Ready
+    return this.waitForTrackReady()
+  }
+
+  waitForTrackReady = async () => {
+    const startedAt = Date.now()
+
+    while (Date.now() - startedAt < TRACK_READY_TIMEOUT_MS) {
+      if (this.unmounted) return false
+
+      const state = await this.getPlaybackState()
+
+      if (
+        state === State.Ready ||
+        state === State.Playing ||
+        state === State.Paused
+      ) {
+        return !this.unmounted
+      }
+
+      if (state === State.Error) return false
+
+      await new Promise(resolve => setTimeout(resolve, TRACK_READY_POLL_MS))
     }
 
-    // If player was already set to play or set to autoplay, start playing
-    if (playing || autoplay) {
-      await TrackPlayer.play()
-      updatePlaying(true)
-    }
+    console.error('Audio Player: timed out waiting for the track to load')
 
-    // ensure play/pause button matches playing prop
-    let state = await this.getPlaybackState()
-    if (state === State.Playing && !playing) {
-      updatePlaying(true)
-    } else if (state === State.Paused && playing) {
-      updatePlaying(false)
-    }
+    return false
   }
 
   // Generic seeking function used by index to handle skip and rewind.
@@ -126,68 +183,59 @@ class AudioPlayerSub extends Component {
       prevProgress,
       duration,
       autoplay,
-      keepPlaying,
     } = this.props
 
-    const oldTrack = await TrackPlayer.getTrack(0)
+    const oldTrack = await TrackPlayer.getActiveTrack()
 
-    if (topScreen && !this.state.switching && oldTrack?.url !== track.url) {
+    if (topScreen && !this.loadingTrack && oldTrack?.url !== track.url) {
+      this.loadingTrack = true
       this.setState({ switching: true })
 
-      const id = uuid()
+      try {
+        // loadTrack pauses before loading, which also keeps the previous
+        // screen's audio from playing on this screen's audio player
+        if (await this.loadTrack()) {
+          // reset prevProgress if already
+          // else, revert to previous progress if returning to a previous screen
+          if (Math.round(prevProgress * 100) / 100 === 1) {
+            this.props.updatePrevProgress(0)
+          } else if (prevProgress !== 0) {
+            const {
+              updatePlayed,
+              updateProgress,
+              updatePrevProgress,
+            } = this.props
+            const newPlayed = duration * prevProgress
+            updatePlayed(newPlayed)
+            updateProgress(prevProgress)
+            updatePrevProgress(0)
+            await TrackPlayer.seekTo(newPlayed)
+          }
 
-      await TrackPlayer.reset()
-      await TrackPlayer.add({
-        id,
-        url: track.url,
-        title: track.title,
-        artist: track.subtitle,
-        artwork: track.artwork,
-      })
-
-      if (Platform.OS === 'android') {
-        await TrackPlayer.skipToNext()
+          // If player was already set to play, start playing
+          if (playing || autoplay) {
+            await TrackPlayer.play()
+            updatePlaying(true)
+          }
+        }
+      } finally {
+        this.loadingTrack = false
+        if (!this.unmounted) {
+          this.setState({ switching: false, startSwitch: false })
+        }
       }
-
-      // prevents previous screen's audio playing on new screens' audio player
-      if (keepPlaying) {
-        await TrackPlayer.pause()
-        this.setState({ playing: false })
-      }
-
-      //check that new track is ready before playing
-      let isReady = (await this.getPlaybackState()) === State.Ready
-      while (!isReady) {
-        isReady = (await this.getPlaybackState()) === State.Ready
-      }
-
-      // reset prevProgress if already
-      // else, revert to previous progress if returning to a previous screen
-      if (Math.round(prevProgress * 100) / 100 === 1) {
-        this.props.updatePrevProgress(0)
-      } else if (prevProgress !== 0) {
-        const { updatePlayed, updateProgress, updatePrevProgress } = this.props
-        const newPlayed = duration * prevProgress
-        updatePlayed(newPlayed)
-        updateProgress(prevProgress)
-        updatePrevProgress(0)
-        await TrackPlayer.seekTo(newPlayed)
-      }
-
-      // If player was already set to play, start playing
-      if (playing || autoplay) {
-        await TrackPlayer.play()
-        updatePlaying(true)
-      }
-
-      this.setState({ switching: false, startSwitch: false })
     }
 
-    // ensure play/pause button matches playing prop
+    // ensure play/pause button matches playing prop. Skipped while a track is
+    // loading, since the player state is about to change.
+    if (this.unmounted || this.loadingTrack) return
     let playerState = await this.getPlaybackState()
-    if (playerState === State.Playing && !playing) {
+    if (this.unmounted || this.loadingTrack) return
+
+    const { playing: isPlaying } = this.props
+    if (playerState === State.Playing && !isPlaying) {
       updatePlaying(true)
-    } else if (playerState === State.Paused && playing) {
+    } else if (playerState === State.Paused && isPlaying) {
       updatePlaying(false)
     }
   }
