@@ -11,6 +11,27 @@ const isAlreadyInitializedError = err =>
   err?.code === 'player_already_initialized' ||
   /already been initialized/i.test(err?.message || '')
 
+const isBlank = value => typeof value === 'string' && value.trim() === ''
+
+// Android's load() crashes the app on an empty URL field (unlike add(), it
+// doesn't catch the native error), so blank optional URLs are left out
+const toPlayerTrack = track => {
+  const playerTrack = {
+    id: uuid(),
+    url: track.url,
+    title: track.title,
+    artist: track.subtitle,
+  }
+
+  if (track.artwork && !isBlank(track.artwork)) {
+    playerTrack.artwork = track.artwork
+  }
+
+  return playerTrack
+}
+
+const hasUrl = track => !!track?.url && !isBlank(track.url)
+
 class AudioPlayerSub extends Component {
   constructor(props) {
     super(props)
@@ -94,7 +115,10 @@ class AudioPlayerSub extends Component {
       // that is playing; checkTrack loads it once its screen is back on top
       if (topScreen === false) return
 
-      if (!(await this.loadTrack())) return
+      if (!(await this.loadTrack())) {
+        if (!this.unmounted) updatePlaying(false)
+        return
+      }
 
       // This instance is new for every track, so start from a clean
       // play/pause state and only autoplay once the new track is ready
@@ -114,16 +138,19 @@ class AudioPlayerSub extends Component {
   loadTrack = async () => {
     const { track } = this.props
 
-    // Paused first so load() neither resumes the previous track nor starts
-    // the new one before the caller decides whether it should play
-    await TrackPlayer.pause()
-    await TrackPlayer.load({
-      id: uuid(),
-      url: track.url,
-      title: track.title,
-      artist: track.subtitle,
-      artwork: track.artwork,
-    })
+    try {
+      // Paused first so load() neither resumes the previous track nor starts
+      // the new one before the caller decides whether it should play
+      await TrackPlayer.pause()
+
+      // Nothing to load: leave the player paused
+      if (!hasUrl(track)) return false
+
+      await TrackPlayer.load(toPlayerTrack(track))
+    } catch (err) {
+      console.error('Audio Player: error loading track', err)
+      return false
+    }
 
     return this.waitForTrackReady()
   }
@@ -181,7 +208,12 @@ class AudioPlayerSub extends Component {
 
     const oldTrack = await TrackPlayer.getActiveTrack()
 
-    if (topScreen && !this.loadingTrack && oldTrack?.url !== track.url) {
+    if (
+      topScreen &&
+      !this.loadingTrack &&
+      hasUrl(track) &&
+      oldTrack?.url !== track.url
+    ) {
       this.loadingTrack = true
       this.setState({ switching: true })
 
