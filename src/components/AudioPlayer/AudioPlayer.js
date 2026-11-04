@@ -7,8 +7,11 @@ import TrackPlayer, {
 import { v4 as uuid } from 'uuid'
 import ProgressBar from './ProgressBar'
 
-// How long to wait for a newly loaded track before giving up
-const TRACK_READY_TIMEOUT_MS = 15000
+// Safety bound on waiting for a newly loaded track. It is long on purpose:
+// slow mobile networks can take well over 15s to buffer, and giving up early
+// would cancel autoplay. Errors, unmount or another track replacing ours end
+// the wait sooner.
+const TRACK_READY_TIMEOUT_MS = 120000
 const TRACK_READY_POLL_MS = 100
 
 const isAlreadyInitializedError = err =>
@@ -158,10 +161,10 @@ class AudioPlayerSub extends Component {
       return false
     }
 
-    return this.waitForTrackReady()
+    return this.waitForTrackReady(track.url)
   }
 
-  waitForTrackReady = async () => {
+  waitForTrackReady = async url => {
     const startedAt = Date.now()
 
     while (Date.now() - startedAt < TRACK_READY_TIMEOUT_MS) {
@@ -169,15 +172,19 @@ class AudioPlayerSub extends Component {
 
       const state = await this.getPlaybackState()
 
+      if (state === State.Error) return false
+
       if (
         state === State.Ready ||
         state === State.Playing ||
         state === State.Paused
       ) {
-        return !this.unmounted
-      }
+        // Another Audio Player (e.g. on a screen opened while this track was
+        // buffering) may have replaced it; never start playing its track
+        const activeTrack = await TrackPlayer.getActiveTrack()
 
-      if (state === State.Error) return false
+        return !this.unmounted && activeTrack?.url === url
+      }
 
       await new Promise(resolve => setTimeout(resolve, TRACK_READY_POLL_MS))
     }
